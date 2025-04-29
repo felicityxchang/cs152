@@ -39,7 +39,9 @@ class Report:
         
         if self.state == State.AWAITING_MESSAGE:
             # Parse out the three ID strings from the message link
-            m = re.search('/(\d+)/(\d+)/(\d+)', message.content)
+
+            # Asked ChatGPT to help debug this regex
+            m = re.search(r'https?://(?:canary\.|ptb\.)?discord(?:app)?\.com/channels/(\d+)/(\d+)/(\d+)', message.content)
             if not m:
                 return ["I'm sorry, I couldn't read that link. Please try again or say `cancel` to cancel."]
             guild = self.client.get_guild(int(m.group(1)))
