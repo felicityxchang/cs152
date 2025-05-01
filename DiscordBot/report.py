@@ -181,7 +181,7 @@ class Report:
                     self.specific_type = content_types[type_index]
                     self._send_report()
                     self.state = State.REPORT_COMPLETE
-                    return ["Send report"]
+                    return ["Report sent."]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -217,8 +217,8 @@ class Report:
                         # Send a report first
                         self._send_report()
                         self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-                        return ["Send report", 
-                                "Is there anything else you want to add?", 
+                        return ["Report sent.", 
+                                "Thank you for reporting this issue. Is there any other action you would like to take?", 
                                 self._get_additional_suicide_options()]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
@@ -238,8 +238,8 @@ class Report:
                         # Send a report first
                         self._send_report()
                         self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
-                        return ["Send report", 
-                                "Is there anything else you want to add?", 
+                        return ["Report sent.", 
+                                "Thank you for reporting this issue. Is there any other action you would like to take?", 
                                 self._get_additional_ed_options()]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
@@ -254,7 +254,7 @@ class Report:
                     self.specific_type = content_types[type_index]
                     self._send_report()
                     self.state = State.REPORT_COMPLETE
-                    return ["Send report"]
+                    return ["Report sent."]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -268,7 +268,7 @@ class Report:
                     self.specific_type = content_types[type_index]
                     self._send_report()
                     self.state = State.REPORT_COMPLETE
-                    return ["Send report"]
+                    return ["Report sent."]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -281,17 +281,17 @@ class Report:
             
             if self.specific_type == SuicideSelfHarmType.SUICIDE:
                 self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-                return ["Send report", 
-                        "Is there anything else you want to add?", 
+                return ["Report sent.", 
+                        "Thank you for reporting this issue. Is there any other action you would like to take?", 
                         self._get_additional_suicide_options()]
             elif self.specific_type == SuicideSelfHarmType.EATING_DISORDER:
                 self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
-                return ["Send report", 
-                        "Is there anything else you want to add?", 
+                return ["Report sent.", 
+                        "Thank you for reporting this issue. Is there any other action you would like to take?", 
                         self._get_additional_ed_options()]
             else:
                 self.state = State.REPORT_COMPLETE
-                return ["Send report"]
+                return ["Report sent."]
                 
         if self.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             try:
@@ -389,7 +389,7 @@ class Report:
             # For other harmful subcategories, send the report and complete
             self._send_report()
             self.state = State.REPORT_COMPLETE
-            return ["Send report"]
+            return ["Report sent."]
             
     def _handle_illegal_subcategory_selection(self):
         if self.subcategory == IllegalSubcategory.ILLEGAL_ACTIVITIES:
@@ -402,7 +402,7 @@ class Report:
             # For other illegal subcategories, send the report and complete
             self._send_report()
             self.state = State.REPORT_COMPLETE
-            return ["Send report"]
+            return ["Report sent."]
     
     def _get_help_message(self):
         help_message = "**Reporting Process Help**\n\n"
