@@ -179,8 +179,9 @@ class Report:
                 content_types = list(SexualContentType)
                 if 0 <= type_index < len(content_types):
                     self.specific_type = content_types[type_index]
+                    self._send_report()
                     self.state = State.REPORT_COMPLETE
-                    return ["Thank you for your report. We will review this message and take appropriate action."]
+                    return ["Send report"]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -213,8 +214,10 @@ class Report:
                         self.state = State.AWAITING_EXPLANATION
                         return ["Please provide more details about your report:"]
                     else:
+                        # Send a report first
+                        self._send_report()
                         self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-                        return ["Thank you for your report. We take this very seriously.", 
+                        return ["Send report", 
                                 "Is there anything else you want to add?", 
                                 self._get_additional_suicide_options()]
                 else:
@@ -232,8 +235,10 @@ class Report:
                         self.state = State.AWAITING_EXPLANATION
                         return ["Please provide more details about your report:"]
                     else:
+                        # Send a report first
+                        self._send_report()
                         self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
-                        return ["Thank you for your report. We take this very seriously.", 
+                        return ["Send report", 
                                 "Is there anything else you want to add?", 
                                 self._get_additional_ed_options()]
                 else:
@@ -247,8 +252,9 @@ class Report:
                 content_types = list(IllegalActivityType)
                 if 0 <= type_index < len(content_types):
                     self.specific_type = content_types[type_index]
+                    self._send_report()
                     self.state = State.REPORT_COMPLETE
-                    return ["Thank you for your report. We will review this message and take appropriate action."]
+                    return ["Send report"]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -260,8 +266,9 @@ class Report:
                 content_types = list(MisinformationType)
                 if 0 <= type_index < len(content_types):
                     self.specific_type = content_types[type_index]
+                    self._send_report()
                     self.state = State.REPORT_COMPLETE
-                    return ["Thank you for your report. We will review this message and take appropriate action."]
+                    return ["Send report"]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -269,17 +276,22 @@ class Report:
                 
         if self.state == State.AWAITING_EXPLANATION:
             self.explanation = message.content
+            # Send a report first
+            self._send_report()
+            
             if self.specific_type == SuicideSelfHarmType.SUICIDE:
                 self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-                return ["Thank you for your explanation. Is there anything else you want to add?", 
+                return ["Send report", 
+                        "Is there anything else you want to add?", 
                         self._get_additional_suicide_options()]
             elif self.specific_type == SuicideSelfHarmType.EATING_DISORDER:
                 self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
-                return ["Thank you for your explanation. Is there anything else you want to add?", 
+                return ["Send report", 
+                        "Is there anything else you want to add?", 
                         self._get_additional_ed_options()]
             else:
                 self.state = State.REPORT_COMPLETE
-                return ["Thank you for your report. We will review this message and take appropriate action."]
+                return ["Send report"]
                 
         if self.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             try:
@@ -343,6 +355,19 @@ class Report:
 
     def report_complete(self):
         return self.state == State.REPORT_COMPLETE
+        
+    def _send_report(self):
+        """
+        Sends the report to the moderation team
+        This is a placeholder function that would be implemented in a real system
+        """
+        print(f"Report sent for message {self.message.id if self.message else 'unknown'}")
+        print(f"Category: {self.category.value if self.category else 'unknown'}")
+        print(f"Subcategory: {self.subcategory.value if self.subcategory else 'unknown'}")
+        print(f"Specific type: {self.specific_type.value if self.specific_type else 'unknown'}")
+        print(f"Follow-up: {self.follow_up.value if self.follow_up else 'unknown'}")
+        print(f"Explanation: {self.explanation if self.explanation else 'none'}")
+        # In a real implementation, this would send the data to a moderation database or API
 
     def _handle_category_selection(self):
         if self.category == ReportCategory.HARMFUL:
@@ -361,9 +386,10 @@ class Report:
             self.state = State.AWAITING_SUICIDE_SELF_HARM_TYPE
             return ["Please provide more details about the suicide/self-harm content:", self._get_suicide_self_harm_types()]
         else:
-            # For other harmful subcategories, complete the report
+            # For other harmful subcategories, send the report and complete
+            self._send_report()
             self.state = State.REPORT_COMPLETE
-            return ["Thank you for your report. We will review this message and take appropriate action."]
+            return ["Send report"]
             
     def _handle_illegal_subcategory_selection(self):
         if self.subcategory == IllegalSubcategory.ILLEGAL_ACTIVITIES:
@@ -373,9 +399,10 @@ class Report:
             self.state = State.AWAITING_MISINFORMATION_TYPE
             return ["Please specify the type of misinformation:", self._get_misinformation_types()]
         else:
-            # For other illegal subcategories, complete the report
+            # For other illegal subcategories, send the report and complete
+            self._send_report()
             self.state = State.REPORT_COMPLETE
-            return ["Thank you for your report. We will review this message and take appropriate action."]
+            return ["Send report"]
     
     def _get_help_message(self):
         help_message = "**Reporting Process Help**\n\n"
