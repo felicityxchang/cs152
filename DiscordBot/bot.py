@@ -12,6 +12,7 @@ from datetime import datetime
 from enum import Enum
 
 from report import HarmfulSubcategory
+from report import SuicideFollow
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -47,6 +48,10 @@ class RecategorizationOption(Enum):
     ILLEGAL_ACTIVITIES = "Illegal Activities"
     FRAUD_SPAM = "Fraud and Scam/Spam"
     MISINFORMATION = "Misinformation/Erroneous Content"
+
+class FollowUpMessage(Enum):
+    ENCOURAGED = "Bot encouraged suicide/self-harm"
+    FAILED_DISCOURAGE = "Bot failed to discourage suicide/self-harm"
 
 class ModeratorReportState:
     def __init__(self, report, reported_message, mod_channel):
@@ -175,7 +180,12 @@ class ModBot(discord.Client):
         if report.specific_type:
             await mod_channel.send(f"**Type:** {report.specific_type.value}")
         if report.follow_up:
-            await mod_channel.send(f"**Follow-up:** {report.follow_up.value}")
+            if report.follow_up == SuicideFollow.BOT_ENCOURAGED:
+                await mod_channel.send(f"**Follow-up:** {FollowUpMessage.ENCOURAGED.value}")
+            elif report.follow_up == SuicideFollow.BOT_FAILED_DISCOURAGE:
+                await mod_channel.send(f"**Follow-up:** {FollowUpMessage.FAILED_DISCOURAGE.value}")
+            else:
+                await mod_channel.send(f"**Follow-up:** {report.follow_up.value}")
         if report.explanation:
             await mod_channel.send(f"**User Explanation:** {report.explanation}")
         
