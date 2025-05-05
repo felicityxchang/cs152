@@ -388,27 +388,18 @@ class ModBot(discord.Client):
             
         mod_report = self.moderator_reports[report_id]
         
-        # Get the index of the gravity level
-        gravity_index = list(GravityLevel).index(gravity_level)
-        
-        if gravity_index <= 1:
+        if gravity_level == 0:
             # Level 0-1: No action needed
             await mod_report.mod_channel.send("✅ **No action needed** - Bot handled the situation appropriately.")
             await self.complete_moderator_report(report_id)
             
-        elif gravity_index == 2:
+        elif gravity_level == 1 or gravity_level == 2 or gravity_level == 3:
             # Level 2: Send character for review
             await mod_report.mod_channel.send("⚠️ **Character sent for review** - The character will be reviewed by the character team.")
             # Here you would implement logic to flag the character for review
             await self.complete_moderator_report(report_id)
             
-        elif gravity_index == 3:
-            # Level 3: Send character for review
-            await mod_report.mod_channel.send("⚠️ **Character sent for review** - The character will be reviewed by the character team.")
-            # Here you would implement logic to flag the character for review
-            await self.complete_moderator_report(report_id)
-            
-        elif gravity_index >= 4:
+        elif gravity_level >= 4:
             # Level 4-5: Block character for all users
             if mod_report.reported_message and mod_report.reported_message.author:
                 character_id = mod_report.reported_message.author.id
@@ -420,7 +411,8 @@ class ModBot(discord.Client):
                 self.globally_blocked_characters.add(character_id)
                 
                 await mod_report.mod_channel.send(f"⛔ **Character blocked for all users** - Character ID: {character_id}")
-            
+                await mod_report.mod_channel.send("⚠️ **Character sent for review** - The character will be reviewed by the character team.")
+
             await self.complete_moderator_report(report_id)
 
     async def recategorize_report(self, report_id):
