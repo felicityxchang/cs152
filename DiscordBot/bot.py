@@ -129,7 +129,7 @@ class ModBot(discord.Client):
         report = self.reports[author_id]
         # If the report is complete or cancelled, remove it from our map
         if report.report_complete():
-            # # Check if this is a suicide/self-harm report + send to mods
+            # Check if this is a suicide/self-harm report + send to mods
             if (report.subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM):
                 await self.send_report_to_moderators(report)
 
