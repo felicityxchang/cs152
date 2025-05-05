@@ -366,11 +366,11 @@ class ModBot(discord.Client):
                 
                 await mod_report.mod_channel.send(f"⛔ **Character blocked** for user ID: {user_id}")
             
-            await self.complete_moderator_report(report_id)
-            
-        elif decision == "NO":
+            # await self.complete_moderator_report(report_id)
+        await self.check_gravity_level(report_id)
+        # elif decision == "NO":
             # Check gravity level for suicide/self-harm reports
-            await self.check_gravity_level(report_id)
+        
 
     async def check_gravity_level(self, report_id):
         """Check the gravity level of the suicide/self-harm content."""
