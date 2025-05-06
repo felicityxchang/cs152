@@ -291,7 +291,7 @@ class Report:
                 options = list(AdditionalSuicideOptions)
                 if 0 <= option_index < len(options):
                     self.additional_option = options[option_index]
-                    
+                    self.state = State.REPORT_COMPLETE
                     if self.additional_option == AdditionalSuicideOptions.RESOURCES:
                         return ["Here are some resources that might help:",
                                 "• National Suicide Prevention Lifeline: 1-800-273-8255",
