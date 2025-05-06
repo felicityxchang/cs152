@@ -94,6 +94,7 @@ class Report:
         self.additional_option = None
         self.blocked_characters = set()
         self.blocked_topics = set()
+        self.user_id = None
         
     async def handle_message(self, message):
         '''

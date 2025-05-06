@@ -134,13 +134,15 @@ class ModBot(discord.Client):
             await message.channel.send(r)
 
         report = self.reports[author_id]
-        # If the report is complete or cancelled, remove it from our map
-        if report.report_complete() or report.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
+        if report.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             # Check if this is a suicide/self-harm report + send to mods
             if (report.subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM):
+                report.user_id = author_id
                 await self.send_report_to_moderators(report)
-            if report.report_complete():
-                self.reports.pop(author_id)
+
+        # If the report is complete or cancelled, remove it from our map
+        if report.report_complete():
+            self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
         # Only handle messages sent in the "group-#" channel
@@ -385,7 +387,7 @@ class ModBot(discord.Client):
                 self.blocked_characters[user_id].add(character_id)
                 
                 await mod_report.mod_channel.send(f"⛔ **Character blocked** for user ID: {user_id}")
-                user = await mod_report.report.client.fetch_user(user_id)
+                user = await mod_report.report.client.fetch_user(mod_report.report.user_id)
                 dm_channel = await user.create_dm()
                 await dm_channel.send(f"⛔ **Character blocked** - You are blocked from interacting with this character (ID: {character_id}).")
             
