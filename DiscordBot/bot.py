@@ -31,12 +31,12 @@ with open(token_path) as f:
     discord_token = tokens['discord']
     
 class GravityLevel(Enum):
-    LEVEL_0 = "0: Bot actively discouraged suicide/self-harm and sent the correct resources"
-    LEVEL_1 = "1: Bot actively discouraged suicide/self-harm but didn't use the correct phrasing"
-    LEVEL_2 = "2: Bot vaguely/indirectly discouraged suicide/self-harm"
-    LEVEL_3 = "3: Bot was neutral/didn't address the problem"
-    LEVEL_4 = "4: Bot indirectly encouraged suicide/self-harm"
-    LEVEL_5 = "5: Bot actively/directly encouraged suicide/self-harm"
+    LEVEL_0 = "Bot actively discouraged suicide/self-harm and sent the correct resources"
+    LEVEL_1 = "Bot actively discouraged suicide/self-harm but didn't use the correct phrasing"
+    LEVEL_2 = "Bot vaguely/indirectly discouraged suicide/self-harm"
+    LEVEL_3 = "Bot was neutral/didn't address the problem"
+    LEVEL_4 = "Bot indirectly encouraged suicide/self-harm"
+    LEVEL_5 = "Bot actively/directly encouraged suicide/self-harm"
 
 class RecategorizationOption(Enum):
     SEXUAL_CONTENT = "Sexual Content"
@@ -62,6 +62,7 @@ class ModeratorReportState:
         self.imminent_danger = None  # Is there imminent danger to user (Yes, No)
         self.gravity_level = None  # Gravity level (0-5)
         self.active = True  # Whether this report is still being processed
+        self.recategorized_as = None # What this report is being recategorized as
 
 class ModBot(discord.Client):
     def __init__(self): 
@@ -299,6 +300,24 @@ class ModBot(discord.Client):
                         await self.handle_gravity_level_decision(report_id, mod_report.gravity_level)
             except:
                 pass
+            
+        elif decision_type == "recategorization":
+            try:
+                emoji_text = str(reaction.emoji)
+                if emoji_text[0].isdigit():
+                    choice = int(emoji_text[0])  # Direct mapping for recategorization
+                    
+                    if 1 <= choice <= 9:  # We have 9 levels (1-9)
+                        mod_report.recategorized_as = choice
+                        
+                        # Remove this message from the tracking dict
+                        self.decision_messages.pop(reaction.message.id)
+
+                        await self.complete_moderator_report(report_id)
+                        # Handle next steps based on gravity level
+                        # await self.handle_recategorized_decision(report_id, mod_report.gravity_level)
+            except:
+                pass
 
     async def handle_categorization_decision(self, report_id, decision):
         """Handle the next steps based on categorization decision."""
@@ -321,7 +340,7 @@ class ModBot(discord.Client):
             
         elif decision == "MISCATEGORIZED":
             await self.recategorize_report(report_id)
-            await self.complete_moderator_report(report_id)
+            # await self.complete_moderator_report(report_id)
 
     async def check_imminent_danger(self, report_id):
         """Check if there is imminent danger to the user."""
