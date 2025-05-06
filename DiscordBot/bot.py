@@ -139,8 +139,8 @@ class ModBot(discord.Client):
             # Check if this is a suicide/self-harm report + send to mods
             if (report.subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM):
                 await self.send_report_to_moderators(report)
-
-            self.reports.pop(author_id)
+            if report.report_complete():
+                self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
         # Only handle messages sent in the "group-#" channel
@@ -390,7 +390,6 @@ class ModBot(discord.Client):
                 await dm_channel.send(f"⛔ **Character blocked** - You are blocked from interacting with this character (ID: {character_id}).")
             
         await self.check_gravity_level(report_id)
-
 
     async def check_gravity_level(self, report_id):
         """Check the gravity level of the suicide/self-harm content."""
