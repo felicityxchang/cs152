@@ -385,12 +385,12 @@ class ModBot(discord.Client):
                 self.blocked_characters[user_id].add(character_id)
                 
                 await mod_report.mod_channel.send(f"⛔ **Character blocked** for user ID: {user_id}")
+                user = await mod_report.report.client.fetch_user(user_id)
+                dm_channel = await user.create_dm()
+                await dm_channel.send(f"⛔ **Character blocked** - You are blocked from interacting with this character (ID: {character_id}).")
             
-            # await self.complete_moderator_report(report_id)
         await self.check_gravity_level(report_id)
-        # elif decision == "NO":
-            # Check gravity level for suicide/self-harm reports
-        
+
 
     async def check_gravity_level(self, report_id):
         """Check the gravity level of the suicide/self-harm content."""
