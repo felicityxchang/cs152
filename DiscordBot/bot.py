@@ -374,7 +374,7 @@ class ModBot(discord.Client):
         if decision == "YES":
             # Block character for this user
             if mod_report.reported_message and mod_report.reported_message.author:
-                user_id = mod_report.report.message.author.id
+                user_id = mod_report.report.user_id
                 character_id = mod_report.reported_message.author.id
                 
                 # Add character to blocked list
@@ -387,7 +387,7 @@ class ModBot(discord.Client):
                 self.blocked_characters[user_id].add(character_id)
                 
                 await mod_report.mod_channel.send(f"⛔ **Character blocked** for user ID: {user_id}")
-                user = await mod_report.report.client.fetch_user(mod_report.report.user_id)
+                user = await mod_report.report.client.fetch_user(user_id)
                 dm_channel = await user.create_dm()
                 await dm_channel.send(f"⛔ **Character blocked** - You are blocked from interacting with this character (ID: {character_id}).")
             
