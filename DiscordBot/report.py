@@ -183,7 +183,7 @@ class Report:
                 if 0 <= type_index < len(content_types):
                     self.specific_type = content_types[type_index]
                     self.state = State.REPORT_COMPLETE
-                    return ["Report sent."]
+                    return ["Report sent. ✅"]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -217,7 +217,7 @@ class Report:
                         return ["Please provide more details about your report:"]
                     else:
                         self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-                        return ["Report sent.", 
+                        return ["Report sent. ✅", 
                                 "Thank you for reporting this issue. Is there any other action you would like to take?", 
                                 self._get_additional_suicide_options()]
                 else:
@@ -236,7 +236,7 @@ class Report:
                         return ["Please provide more details about your report:"]
                     else:
                         self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
-                        return ["Report sent.", 
+                        return ["Report sent. ✅", 
                                 "Thank you for reporting this issue. Is there any other action you would like to take?", 
                                 self._get_additional_ed_options()]
                 else:
@@ -251,7 +251,7 @@ class Report:
                 if 0 <= type_index < len(content_types):
                     self.specific_type = content_types[type_index]
                     self.state = State.REPORT_COMPLETE
-                    return ["Report sent."]
+                    return ["Report sent. ✅"]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -264,7 +264,7 @@ class Report:
                 if 0 <= type_index < len(content_types):
                     self.specific_type = content_types[type_index]
                     self.state = State.REPORT_COMPLETE
-                    return ["Report sent."]
+                    return ["Report sent. ✅"]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(content_types)) + "."]
             except ValueError:
@@ -275,17 +275,17 @@ class Report:
             
             if self.specific_type == SuicideSelfHarmType.SUICIDE:
                 self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-                return ["Report sent.", 
+                return ["Report sent. ✅", 
                         "Thank you for reporting this issue. Is there any other action you would like to take?", 
                         self._get_additional_suicide_options()]
             elif self.specific_type == SuicideSelfHarmType.EATING_DISORDER:
                 self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
-                return ["Report sent.", 
+                return ["Report sent. ✅", 
                         "Thank you for reporting this issue. Is there any other action you would like to take?", 
                         self._get_additional_ed_options()]
             else:
                 self.state = State.REPORT_COMPLETE
-                return ["Report sent."]
+                return ["Report sent. ✅"]
                 
         if self.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             try:
@@ -304,12 +304,12 @@ class Report:
                         # Add character to blocked list
                         if self.message:
                             self.blocked_characters.add(self.message.author.id)
-                        return ["Character blocked. You will not see messages from this character anymore.",
+                        return ["⛔ Character blocked. You will not see messages from this character anymore.",
                                 "Thank you for your report. We will review this message and take appropriate action."]
                     elif self.additional_option == AdditionalSuicideOptions.DONT_SHOW_TOPIC:
                         # Add topic to blocked list
                         self.blocked_topics.add("suicide")
-                        return ["Topic blocked. This topic will not be shown to you anymore.",
+                        return ["⛔ Topic blocked. This topic will not be shown to you anymore.",
                                 "Thank you for your report. We will review this message and take appropriate action."]
                     elif self.additional_option == AdditionalSuicideOptions.STOP_HERE:
                         return ["Thank you for your report. We will review this message and take appropriate action."]
@@ -335,12 +335,12 @@ class Report:
                         # Add character to blocked list
                         if self.message:
                             self.blocked_characters.add(self.message.author.id)
-                        return ["Character blocked. You will not see messages from this character anymore.",
+                        return ["⛔ Character blocked. You will not see messages from this character anymore.",
                                 "Thank you for your report. We will review this message and take appropriate action."]
                     elif self.additional_option == AdditionalEDOptions.DONT_SHOW_TOPIC:
                         # Add topic to blocked list
                         self.blocked_topics.add("eating disorder")
-                        return ["Topic blocked. This topic will not be shown to you anymore.",
+                        return ["⛔ Topic blocked. This topic will not be shown to you anymore.",
                                 "Thank you for your report. We will review this message and take appropriate action."]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
@@ -370,7 +370,7 @@ class Report:
             return ["Please provide more details about the suicide/self-harm content:", self._get_suicide_self_harm_types()]
         else:
             self.state = State.REPORT_COMPLETE
-            return ["Report sent."]
+            return ["Report sent. ✅"]
             
     def _handle_illegal_subcategory_selection(self):
         if self.subcategory == IllegalSubcategory.ILLEGAL_ACTIVITIES:
@@ -381,7 +381,7 @@ class Report:
             return ["Please specify the type of misinformation:", self._get_misinformation_types()]
         else:
             self.state = State.REPORT_COMPLETE
-            return ["Report sent."]
+            return ["Report sent. ✅"]
     
     def _get_help_message(self):
         help_message = "**Reporting Process Help**\n\n"
