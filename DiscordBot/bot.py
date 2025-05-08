@@ -133,10 +133,7 @@ class ModBot(discord.Client):
         for r in responses:
             await message.channel.send(r)
 
-        report = self.reports.get(author_id)
-        if report is None:
-            self.reports[author_id] = Report(self)
-            report = self.reports[author_id]
+        report = self.reports[author_id]
 
         if report.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             # Check if this is a suicide/self-harm report + send to mods
