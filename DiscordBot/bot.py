@@ -133,16 +133,14 @@ class ModBot(discord.Client):
         for r in responses:
             await message.channel.send(r)
 
-        report = self.reports[author_id]
-
-        if report.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
+        if author_id in self.reports and self.reports[author_id].state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             # Check if this is a suicide/self-harm report + send to mods
-            if (report.subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM):
-                report.user_id = author_id
-                await self.send_report_to_moderators(report)
+            if (self.reports[author_id].subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM):
+                self.reports[author_id].user_id = author_id
+                await self.send_report_to_moderators(self.reports[author_id])
 
         # If the report is complete or cancelled, remove it from our map
-        if report.report_complete() and author_id in self.reports:
+        if author_id in self.reports and self.reports[author_id].report_complete():
             self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
