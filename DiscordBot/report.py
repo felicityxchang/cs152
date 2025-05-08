@@ -58,6 +58,7 @@ class AdditionalEDOptions(Enum):
     RESOURCES = "Eating disorder resources"
     BLOCK_CHARACTER = "Block this character (don't show me this character again)"
     DONT_SHOW_TOPIC = "Don't bring up this topic again"
+    STOP_HERE = "No further action needed"
 
 class State(Enum):
     REPORT_START = auto()
@@ -342,6 +343,8 @@ class Report:
                         self.blocked_topics.add("eating disorder")
                         return ["⛔ Topic blocked. This topic will not be shown to you anymore.",
                                 "Thank you for your report. We will review this message and take appropriate action."]
+                    elif self.additional_option == AdditionalEDOptions.STOP_HERE:
+                        return ["Thank you for your report. We will review this message and take appropriate action."]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
             except ValueError:
