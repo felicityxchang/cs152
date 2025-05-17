@@ -10,11 +10,10 @@ This Discord bot includes automatic detection of suicide and self-harm content u
    ```
 
 2. Configure tokens:
-   - Edit `tokens.json` and add your Discord token and Gemini API key
+   - Edit `tokens.json` and add your Discord token
    ```json
    {
      "discord": "YOUR_DISCORD_TOKEN_HERE",
-     "gemini": "YOUR_GEMINI_API_KEY_HERE"
    }
    ```
 
@@ -37,10 +36,3 @@ The bot automatically:
 2. Detects suicide and self-harm related content
 3. Creates pre-filled moderator reports for review
 4. Sends reports to the mod channel for human verification
-
-## Getting a Gemini API Key
-
-1. Go to the [Google AI Studio](https://ai.google.dev/) and sign in
-2. Navigate to the API keys section
-3. Create a new API key
-4. Add the key to your `tokens.json` file 
