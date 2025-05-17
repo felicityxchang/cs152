@@ -16,8 +16,9 @@ This Discord bot includes automatic detection of suicide and self-harm content u
      "discord": "YOUR_DISCORD_TOKEN_HERE",
    }
    ```
+3. Follow this guide for Gemini API Setup: https://cloud.google.com/vertex-ai/generative-ai/docs/start/quickstarts/quickstart-multimodal#gen-ai-sdk-for-python
 
-3. Run the bot:
+4. Run the bot:
    ```
    python bot.py
    ```
