@@ -26,12 +26,8 @@ from report import SuicideSelfHarmType
 # CONSTANTS
 GEMINI_MODEL_VER = 'gemini-2.0-flash-001'
 # GEMINI_MODEL_VER = "gemini-1.5-pro-preview"
-USER_SCRIPTED_REPONSE_0 = "scripted response 0"
-USER_SCRIPTED_REPONSE_1 = "scripted response 1"
-USER_SCRIPTED_REPONSE_2 = "scripted response 2"
-USER_SCRIPTED_REPONSE_3 = "scripted response 3"
-USER_SCRIPTED_REPONSE_4 = "scripted response 4"
-USER_SCRIPTED_REPONSE_5 = "scripted response 5"
+
+BOT_SCRIPTED_REPONSE = "bot scripted response"
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -71,6 +67,15 @@ class RecategorizationOption(Enum):
 class FollowUpMessage(Enum):
     ENCOURAGED = "Bot encouraged suicide/self-harm"
     FAILED_DISCOURAGE = "Bot failed to discourage suicide/self-harm"
+
+class UserScriptedResponse(Enum):
+    USER_SCRIPTED_REPONSE_0 = "user scripted response 0"
+    USER_SCRIPTED_REPONSE_1 = "user scripted response 1"
+    USER_SCRIPTED_REPONSE_2 = "user scripted response 2"
+    USER_SCRIPTED_REPONSE_3 = "user scripted response 3"
+    USER_SCRIPTED_REPONSE_4 = "user scripted response 4"
+    USER_SCRIPTED_REPONSE_5 = "user scripted response 5"
+
 
 class ModeratorReportState:
     def __init__(self, report, reported_message, mod_channel):
@@ -183,6 +188,7 @@ class ModBot(discord.Client):
                     is_suicide_related = await self.check_suicide_content(message.content)
 
                     if is_suicide_related:
+                        # categorize user message
                         user_message_category = await self.categorize_user_message(message.content)
                         if user_message_category != None:
                             # send appropriate scripted response
@@ -192,13 +198,19 @@ class ModBot(discord.Client):
 
             # character AI/bot case
             else:
+                print("role is bot")
                 try:
                     # Check if the message relates to suicide/self-harm
                     is_suicide_related = await self.check_suicide_content(message.content)
                     
                     if is_suicide_related:
                         # Create an auto-generated report
-                        await self.create_auto_suicide_report(message)
+                        # await self.create_auto_suicide_report(message)
+                        # categorize bot message
+                        bot_message_category = await self.categorize_bot_message(message.content)
+                        if bot_message_category != None:
+                            # take correct action
+                            await self.take_appropriate_bot_action(message, bot_message_category)
                 except Exception as e:
                     logger.error(f"Error analyzing message with Gemini: {e}")
             
@@ -227,6 +239,78 @@ class ModBot(discord.Client):
         print("gemini response: ", result)
         return result == "YES"
         
+    async def categorize_bot_message(self, message_text):
+        if not self.gemini_model:
+            return False
+            
+        # only categorize into 1 through 5 and then after, if category is 1, determine if correct resources were sent
+        # TODO: not sure if we'll ever get a message in category 3 because it won't be suicide-related content
+        prompt = f"""
+        Categorize this message into categorizes 1 through 5 based on these category descriptions:
+        1: the message actively discouraged suicide/self-harm
+        2: the message vaguely or indirectly discouraged suicide/self-harm
+        3: the message was neutral or did not address suicide/self-harm
+        4: the message indirectly encouraged suicide/self-harm
+        5: the message actively/directly encouraged suicide/self-harm
+        Message: {message_text}
+        """
+
+        response = self.gemini_model.models.generate_content(
+            model=GEMINI_MODEL_VER,
+            contents=prompt
+        )
+
+        # TODO: if the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
+        if response == 1:
+            pass
+        
+        result = int(response.text.strip())
+        print("gemini response: ", result, flush=True)
+        return result
+    
+    async def take_appropriate_bot_action(self, message, bot_message_category):
+        if bot_message_category == 0:
+            return
+        elif bot_message_category == 1 or bot_message_category == 2 or bot_message_category == 3:
+            await message.channel.send(BOT_SCRIPTED_REPONSE)
+        elif bot_message_category == 4 or bot_message_category == 5:
+            # disrupt/change message
+            # TODO: how to disrupt/change message? delete, edit, and resend? How to make it look like it's coming from the character bot?
+
+
+            # block character for this user
+            # TODO: how can we tell which user is interacting with this character AI?
+            # user_id = ??
+            # character_id = ??
+            
+            # Add character to blocked list
+            # if not hasattr(self, 'blocked_characters'):
+            #     self.blocked_characters = {}
+            
+            # if user_id not in self.blocked_characters:
+            #     self.blocked_characters[user_id] = set()
+                
+            # self.blocked_characters[user_id].add(character_id)
+            
+            # await mod_report.mod_channel.send(f"⛔ **Character blocked** for user ID: {user_id}")
+            # user = await mod_report.report.client.fetch_user(user_id)
+            # dm_channel = await user.create_dm()
+            # await dm_channel.send(f"⛔ **Character blocked** - You are blocked from interacting with this character (ID: {character_id}).")
+            
+
+            # send message to human moderator to determine if character should be blocked for all users
+            mod_report = Report(self)
+            # I think this is the character AI's id?
+            mod_report.user_id = message.author.id
+            mod_report.message = message
+            mod_report.block_character_for_all_users = True
+            report_id = await self.send_report_to_moderators(mod_report)
+
+        
+        # TODO: do we need to do anything to simulate sending to character team? My guess is no
+            
+            
+            
     async def create_auto_suicide_report(self, message):
         """Create an auto-generated report for suicide/self-harm content"""
         # Create a report instance
@@ -344,29 +428,52 @@ class ModBot(discord.Client):
         
         report_id = f"{report.message.id}-{datetime.now().timestamp()}"
         self.moderator_reports[report_id] = mod_report
+        # check if this is a "check for blocking character for all users"
+        if report.block_character_for_all_users != None:
+            await mod_channel.send(f"🚨 **DETERMINE IF CHARACTER SHOULD BE BLOCKED FOR ALL USERS** 🚨 (ID: {report_id})")
+            await mod_channel.send(f"**Message:** \n```{report.message.author.name}: {report.message.content}```")
+            await self.block_character_for_all_users_decision(report_id)
         
-        # Send initial report information
-        await mod_channel.send(f"🚨 **NEW SUICIDE/SELF-HARM REPORT** 🚨 (ID: {report_id})")
-        await mod_channel.send(f"**Reported Message:** \n```{report.message.author.name}: {report.message.content}```")
-        await mod_channel.send(f"**Category:** {report.category.value if report.category else 'None'}")
-        await mod_channel.send(f"**Subcategory:** {report.subcategory.value if report.subcategory else 'None'}")
+        # Otherwise, send initial report information
+        else:
+            await mod_channel.send(f"🚨 **NEW SUICIDE/SELF-HARM REPORT** 🚨 (ID: {report_id})")
+            await mod_channel.send(f"**Reported Message:** \n```{report.message.author.name}: {report.message.content}```")
+            await mod_channel.send(f"**Category:** {report.category.value if report.category else 'None'}")
+            await mod_channel.send(f"**Subcategory:** {report.subcategory.value if report.subcategory else 'None'}")
+            
+            if report.specific_type:
+                await mod_channel.send(f"**Type:** {report.specific_type.value}")
+            if report.follow_up:
+                if report.follow_up == SuicideFollow.BOT_ENCOURAGED:
+                    await mod_channel.send(f"**Follow-up:** {FollowUpMessage.ENCOURAGED.value}")
+                elif report.follow_up == SuicideFollow.BOT_FAILED_DISCOURAGE:
+                    await mod_channel.send(f"**Follow-up:** {FollowUpMessage.FAILED_DISCOURAGE.value}")
+                else:
+                    await mod_channel.send(f"**Follow-up:** {report.follow_up.value}")
+            if report.explanation:
+                await mod_channel.send(f"**User Explanation:** {report.explanation}")
         
-        if report.specific_type:
-            await mod_channel.send(f"**Type:** {report.specific_type.value}")
-        if report.follow_up:
-            if report.follow_up == SuicideFollow.BOT_ENCOURAGED:
-                await mod_channel.send(f"**Follow-up:** {FollowUpMessage.ENCOURAGED.value}")
-            elif report.follow_up == SuicideFollow.BOT_FAILED_DISCOURAGE:
-                await mod_channel.send(f"**Follow-up:** {FollowUpMessage.FAILED_DISCOURAGE.value}")
-            else:
-                await mod_channel.send(f"**Follow-up:** {report.follow_up.value}")
-        if report.explanation:
-            await mod_channel.send(f"**User Explanation:** {report.explanation}")
-        
-        # Start the moderator review flow
-        await self.start_moderator_review(report_id)
+            # Start the moderator review flow
+            await self.start_moderator_review(report_id)
         
         return report_id
+    
+    async def block_character_for_all_users_decision(self, report_id):
+        mod_report = self.moderator_reports[report_id]
+        await mod_report.mod_channel.send("Should this character be blocked for all users? Reply with:")
+        options = "1. Yes, block character for all users\n2. No, do not block character for all users"
+        
+        message = await mod_report.mod_channel.send(options)
+        
+        # Add reaction options for moderator decision
+        for i in range(1, 3):  # 3 options
+            await message.add_reaction(f"{i}\u20e3")  # Adding keycap emoji (1️⃣, 2️⃣, 3️⃣)
+        
+        # Store this message ID for reaction handling
+        if not hasattr(self, 'decision_messages'):
+            self.decision_messages = {}
+        self.decision_messages[message.id] = {"report_id": report_id, "type": "block character"}
+        
 
     async def start_moderator_review(self, report_id):
         """Start the human moderator review process."""
@@ -489,6 +596,32 @@ class ModBot(discord.Client):
                         await self.complete_moderator_report(report_id)
                         # Handle next steps based on gravity level
                         # await self.handle_recategorized_decision(report_id, mod_report.gravity_level)
+            except:
+                pass
+        elif decision_type == "block character":
+            try:
+                emoji_text = str(reaction.emoji)
+                if emoji_text[0].isdigit():
+                    choice = int(emoji_text[0])
+                # block the character for all users
+
+                # Remove this message from the tracking dict
+                self.decision_messages.pop(reaction.message.id)
+
+                if choice == 1:
+                    character_id = mod_report.reported_message.author.id
+                    # Add character to global blocked list
+                    if not hasattr(self, 'globally_blocked_characters'):
+                        self.globally_blocked_characters = set()
+                        
+                    self.globally_blocked_characters.add(character_id)
+                    
+                    await mod_report.mod_channel.send(f"⛔ **Character blocked for all users** - Character ID: {character_id}")
+
+                    await self.complete_moderator_report(report_id)
+                # we don't need to do anything in the case that the moderator decides not to block the character
+                else:
+                    pass
             except:
                 pass
 

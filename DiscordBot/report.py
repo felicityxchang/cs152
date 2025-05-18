@@ -97,6 +97,7 @@ class Report:
         self.blocked_characters = set()
         self.blocked_topics = set()
         self.user_id = None
+        self.block_character_for_all_users = None # should I have done this??
         
     async def handle_message(self, message):
         '''
