@@ -275,28 +275,19 @@ class ModBot(discord.Client):
             await message.channel.send(BOT_SCRIPTED_REPONSE)
         elif bot_message_category == 4 or bot_message_category == 5:
             # disrupt/change message
-            # TODO: how to disrupt/change message? delete, edit, and resend? How to make it look like it's coming from the character bot?
-
+            if not message.channel.permissions_for(message.guild.me).manage_messages:
+                print(f"Missing manage_messages permission in {message.channel}")
+                return
+            else:
+                # delete the message
+                await message.delete()
+                await message.channel.send("""We are sorry, something went wrong. Here are resources that might help based on the topic of your conversation:
+                • National Suicide Prevention Lifeline: 1-800-273-8255
+                • Crisis Text Line: Text HOME to 741741
+                • International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/""")
 
             # block character for this user
             # TODO: how can we tell which user is interacting with this character AI?
-            # user_id = ??
-            # character_id = ??
-            
-            # Add character to blocked list
-            # if not hasattr(self, 'blocked_characters'):
-            #     self.blocked_characters = {}
-            
-            # if user_id not in self.blocked_characters:
-            #     self.blocked_characters[user_id] = set()
-                
-            # self.blocked_characters[user_id].add(character_id)
-            
-            # await mod_report.mod_channel.send(f"⛔ **Character blocked** for user ID: {user_id}")
-            # user = await mod_report.report.client.fetch_user(user_id)
-            # dm_channel = await user.create_dm()
-            # await dm_channel.send(f"⛔ **Character blocked** - You are blocked from interacting with this character (ID: {character_id}).")
-            
 
             # send message to human moderator to determine if character should be blocked for all users
             mod_report = Report(self)
@@ -621,7 +612,7 @@ class ModBot(discord.Client):
                     await self.complete_moderator_report(report_id)
                 # we don't need to do anything in the case that the moderator decides not to block the character
                 else:
-                    pass
+                    await self.complete_moderator_report(report_id)
             except:
                 pass
 
