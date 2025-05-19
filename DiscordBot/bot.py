@@ -27,7 +27,10 @@ from report import SuicideSelfHarmType
 GEMINI_MODEL_VER = 'gemini-2.0-flash-001'
 # GEMINI_MODEL_VER = "gemini-1.5-pro-preview"
 
+# send this message when bot response is categorized as 1, 2, or 3
 BOT_SCRIPTED_REPONSE = "bot scripted response"
+# check if bot's discouragement of suicide/self-harm was correct
+EXPECTED_BOT_RESPONSE = "expected bot response"
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -252,6 +255,7 @@ class ModBot(discord.Client):
         3: the message was neutral or did not address suicide/self-harm
         4: the message indirectly encouraged suicide/self-harm
         5: the message actively/directly encouraged suicide/self-harm
+        Respond with only a number, 1 through 5.
         Message: {message_text}
         """
 
@@ -259,13 +263,15 @@ class ModBot(discord.Client):
             model=GEMINI_MODEL_VER,
             contents=prompt
         )
-
-        # TODO: if the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
-        if response == 1:
-            pass
-        
+            
         result = int(response.text.strip())
         print("gemini response: ", result, flush=True)
+
+        # TODO: if the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
+        if result == 1:
+            if message_text == EXPECTED_BOT_RESPONSE:
+                result = 0
+
         return result
     
     async def take_appropriate_bot_action(self, message, bot_message_category):
@@ -274,7 +280,7 @@ class ModBot(discord.Client):
         elif bot_message_category == 1 or bot_message_category == 2 or bot_message_category == 3:
             await message.channel.send(BOT_SCRIPTED_REPONSE)
         elif bot_message_category == 4 or bot_message_category == 5:
-            # disrupt/change message
+            # delete the message – need certain permissions
             if not message.channel.permissions_for(message.guild.me).manage_messages:
                 print(f"Missing manage_messages permission in {message.channel}")
                 return
@@ -286,18 +292,18 @@ class ModBot(discord.Client):
                 • Crisis Text Line: Text HOME to 741741
                 • International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/""")
 
-            # block character for this user
-            # TODO: how can we tell which user is interacting with this character AI?
+                # block character for this user – just send the blocked message
+                await message.channel.send(f"⛔ **Character blocked**")
 
-            # send message to human moderator to determine if character should be blocked for all users
-            mod_report = Report(self)
-            # I think this is the character AI's id?
-            mod_report.user_id = message.author.id
-            mod_report.message = message
-            mod_report.block_character_for_all_users = True
-            report_id = await self.send_report_to_moderators(mod_report)
 
-        
+                # send message to human moderator to determine if character should be blocked for all users
+                mod_report = Report(self)
+                # I think this is the character AI's id?
+                mod_report.user_id = message.author.id
+                mod_report.message = message
+                mod_report.block_character_for_all_users = True
+                report_id = await self.send_report_to_moderators(mod_report)
+
         # TODO: do we need to do anything to simulate sending to character team? My guess is no
             
             
