@@ -350,17 +350,17 @@ class ModBot(discord.Client):
     
     async def send_appropriate_scripted_message(self, message, user_message_category):
         if user_message_category == 0:
-            await message.channel.send(USER_SCRIPTED_REPONSE_0)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_0)
         elif user_message_category == 1:
-            await message.channel.send(USER_SCRIPTED_REPONSE_1)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_1)
         elif user_message_category == 2:
-            await message.channel.send(USER_SCRIPTED_REPONSE_2)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_2)
         elif user_message_category == 3:
-            await message.channel.send(USER_SCRIPTED_REPONSE_3)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_3)
         elif user_message_category == 4:
-            await message.channel.send(USER_SCRIPTED_REPONSE_4)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_4)
         elif user_message_category == 5:
-            await message.channel.send(USER_SCRIPTED_REPONSE_5)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_5)
 
 
     # NOT BEING USED RIGHT NOW
