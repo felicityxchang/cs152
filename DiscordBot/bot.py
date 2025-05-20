@@ -16,6 +16,7 @@ from google.genai.types import HttpOptions, Part
 # from google.generativeai import types
 # import vertexai
 # from vertexai.generative_models import generative_models
+import textwrap
 
 from report import HarmfulSubcategory
 from report import SuicideFollow
@@ -26,11 +27,6 @@ from report import SuicideSelfHarmType
 # CONSTANTS
 GEMINI_MODEL_VER = 'gemini-2.0-flash-001'
 # GEMINI_MODEL_VER = "gemini-1.5-pro-preview"
-
-# send this message when bot response is categorized as 1, 2, or 3
-BOT_SCRIPTED_REPONSE = "bot scripted response"
-# check if bot's discouragement of suicide/self-harm was correct
-EXPECTED_BOT_RESPONSE = "expected bot response"
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -71,13 +67,80 @@ class FollowUpMessage(Enum):
     ENCOURAGED = "Bot encouraged suicide/self-harm"
     FAILED_DISCOURAGE = "Bot failed to discourage suicide/self-harm"
 
+class BotScriptedResponse(Enum):
+    EXPECTED_BOT_RESPONSE_1 = "National Suicide Prevention Lifeline: 988 or 1-800-273-8255"
+    EXPECTED_BOT_RESPONSE_2 = "Crisis Text Line: Text HOME to 741741"
+    LEVELS_1_2_3 = textwrap.dedent("""\
+    I understand our previous conversation touched on some difficult feelings and thoughts you're experiencing. It's important to recognize how challenging these emotions can be. Many people go through periods of intense emotional pain, and it can sometimes be hard to see a way forward. You're not alone in experiencing these struggles. If you or someone you know is experiencing thoughts of self-harm, these resources can help:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
+    """)
+    LEVELS_4_5 = textwrap.dedent("""\
+    It seems like something has gone wrong. Your feelings and wellbeing are extremely important. 
+    If you or someone you know is experiencing thoughts of self-harm, these resources can help:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255 (24/7)
+    - Crisis Text Line: Text HOME to 741741 (24/7)
+    """)
+
 class UserScriptedResponse(Enum):
-    USER_SCRIPTED_REPONSE_0 = "user scripted response 0"
-    USER_SCRIPTED_REPONSE_1 = "user scripted response 1"
-    USER_SCRIPTED_REPONSE_2 = "user scripted response 2"
-    USER_SCRIPTED_REPONSE_3 = "user scripted response 3"
-    USER_SCRIPTED_REPONSE_4 = "user scripted response 4"
-    USER_SCRIPTED_REPONSE_5 = "user scripted response 5"
+    USER_SCRIPTED_REPONSE_0 = textwrap.dedent("""\
+    I hear that you're feeling isolated and alone right now. Those feelings are real and can be really challenging to experience. 
+    Many people go through periods of feeling disconnected from others, and it can make the world feel like a very lonely place. It takes courage to express these feelings.
+    Connecting with others, even in small ways, can make a difference. Consider reaching out to a trusted friend, family member, or counselor who can provide real human connection. Community groups, support networks, or even volunteer opportunities can also help build meaningful relationships. 
+    Here are a few ressources for you to consider:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    You don't have to face these feelings alone. Is there someone in your life you could reach out to today? """)
+    USER_SCRIPTED_REPONSE_1 = textwrap.dedent("""\
+    I notice we're discussing self-harm, which can bring up many complex emotions and thoughts. Thank you for bringing up this important topic.
+    These conversations can be difficult but are important. Many people struggle with these thoughts or know someone who does, and it's normal to have questions or concerns about them. But these feelings, however intense, can change with time and support.
+    If you or someone you know is experiencing thoughts of self-harm, these resources can help:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    Would you like to share more about what prompted this conversation? I'm here to listen and can help you find the most relevant information or support.
+    """)
+    USER_SCRIPTED_REPONSE_2 = textwrap.dedent("""\
+    I understand you're worried about someone you care about who may be at risk of self-harm. It's important to take these thoughts seriously. Listening without judgment is crucial - let them know you care and they're not alone.
+    Avoid minimizing their feelings or offering quick solutions.
+    Encourage them to seek professional help - this could be their doctor, a therapist, or a crisis service. In urgent situations where you believe someone is in immediate danger, emergency services should be contacted.
+    Here are some ways you can help:
+    - Express concern gently: "I've noticed you seem to be going through a tough time, and I'm worried about you."
+    - Listen without judgment and reassure them that they matter to you
+    - Encourage them to reach out to professionals: Crisis Text Line (Text HOME to 741741) or National Suicide Prevention Lifeline (988)
+    - In emergencies, help them contact emergency services or get to an emergency room
+    Supporting someone with these thoughts can be emotionally challenging. Remember to take care of your own wellbeing too and consider seeking support for yourself.
+    Is there anything about this situation that you'd like to discuss?
+    """)
+    USER_SCRIPTED_REPONSE_3 = textwrap.dedent("""\
+    What you're experiencing sounds really difficult. Reaching out for resources is an important and brave step.
+    Dealing with these thoughts can feel isolating, but you're not alone in this struggle, and there are people who want to help.
+    If you're having thoughts of harming yourself, please reach out to a crisis helpline immediately:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    You don't have to face these feelings alone. Professional support from a therapist or counselor can make a significant difference. Even just talking with a trusted friend or family member might provide some immediate relief.
+    Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
+    """)
+    USER_SCRIPTED_REPONSE_4 = textwrap.dedent("""\
+    What you're experiencing sounds really difficult. Reaching out for resources is an important and brave step.
+    Dealing with these thoughts can feel isolating, but you're not alone in this struggle, and there are people who want to help. These struggles are part of being human, and you shouldn't have to face them alone.
+    If you're having thoughts of harming yourself, please reach out to a crisis helpline immediately:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    You don't have to face these feelings alone. Professional support from a therapist or counselor can make a significant difference. Even just talking with a trusted friend or family member might provide some immediate relief.
+    Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
+    """)
+    USER_SCRIPTED_REPONSE_5 = textwrap.dedent("""\
+    I'm hearing that you're in a lot of pain right now, and I want you to know that I'm taking what you've shared very seriously.
+    When we're in this emotional state, it can feel impossible to see a way forward. But these feelings, however intense, can change with time and support.
+    If you're having thoughts of harming yourself, please reach out to a crisis helpline immediately:
+    - Call 911 or go to your nearest emergency room
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    - If you're not in the US, please call your local emergency services
+
+    Your life matters, and this intense feeling can change with the right support. Please reach out to emergency services now - they're equipped to help you through this critical moment, and taking this step can be the beginning of finding relief.
+    """)
 
 
 class ModeratorReportState:
@@ -227,8 +290,8 @@ class ModBot(discord.Client):
             return False
             
         prompt = f"""
-        Analyze the following message and determine if it contains content related to suicide or self-harm.
-        Return only "YES" if the message contains suicide or self-harm related content, or "NO" if it does not.
+        Analyze the following message and determine if it contains any content related to suicide or self-harm, which can include loneliness and depression.
+        Return only "YES" if the message contains any mention of suicide or self-harm related content, or "NO" if it does not.
         
         Message: {message_text}
         """
@@ -269,7 +332,7 @@ class ModBot(discord.Client):
 
         # TODO: if the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
         if result == 1:
-            if message_text == EXPECTED_BOT_RESPONSE:
+            if BotScriptedResponse.EXPECTED_BOT_RESPONSE_1.value in message_text and BotScriptedResponse.EXPECTED_BOT_RESPONSE_2.value in message_text:
                 result = 0
 
         return result
@@ -278,7 +341,7 @@ class ModBot(discord.Client):
         if bot_message_category == 0:
             return
         elif bot_message_category == 1 or bot_message_category == 2 or bot_message_category == 3:
-            await message.channel.send(BOT_SCRIPTED_REPONSE)
+            await message.channel.send(BotScriptedResponse.LEVELS_1_2_3.value)
         elif bot_message_category == 4 or bot_message_category == 5:
             # delete the message – need certain permissions
             if not message.channel.permissions_for(message.guild.me).manage_messages:
@@ -287,10 +350,7 @@ class ModBot(discord.Client):
             else:
                 # delete the message
                 await message.delete()
-                await message.channel.send("""We are sorry, something went wrong. Here are resources that might help based on the topic of your conversation:
-                • National Suicide Prevention Lifeline: 1-800-273-8255
-                • Crisis Text Line: Text HOME to 741741
-                • International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/""")
+                await message.channel.send(BotScriptedResponse.LEVELS_4_5.value)
 
                 # block character for this user – just send the blocked message
                 await message.channel.send(f"⛔ **Character blocked**")
@@ -342,6 +402,7 @@ class ModBot(discord.Client):
         3: Asks for resources to get help
         4: Non-urgent mention of self-harm or suicide
         5: Direct and urgent mention of self-harm or suicide
+        Return only a number 0, 1, 2, 3, 4, or 5.
         Message: {message_text}
         """
 
@@ -356,17 +417,17 @@ class ModBot(discord.Client):
     
     async def send_appropriate_scripted_message(self, message, user_message_category):
         if user_message_category == 0:
-            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_0)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_0.value)
         elif user_message_category == 1:
-            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_1)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_1.value)
         elif user_message_category == 2:
-            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_2)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_2.value)
         elif user_message_category == 3:
-            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_3)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_3.value)
         elif user_message_category == 4:
-            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_4)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_4.value)
         elif user_message_category == 5:
-            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_5)
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_5.value)
 
 
     # NOT BEING USED RIGHT NOW
