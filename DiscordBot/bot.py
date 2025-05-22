@@ -330,7 +330,8 @@ class ModBot(discord.Client):
         result = int(response.text.strip())
         print("gemini response: ", result, flush=True)
 
-        # TODO: if the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
+        # If the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
+        # If it did, then set result to 0
         if result == 1:
             if BotScriptedResponse.EXPECTED_BOT_RESPONSE_1.value in message_text and BotScriptedResponse.EXPECTED_BOT_RESPONSE_2.value in message_text:
                 result = 0
@@ -355,7 +356,6 @@ class ModBot(discord.Client):
                 # block character for this user – just send the blocked message
                 await message.channel.send(f"⛔ **Character blocked**")
 
-
                 # send message to human moderator to determine if character should be blocked for all users
                 mod_report = Report(self)
                 # I think this is the character AI's id?
@@ -364,7 +364,10 @@ class ModBot(discord.Client):
                 mod_report.block_character_for_all_users = True
                 report_id = await self.send_report_to_moderators(mod_report)
 
-        # TODO: do we need to do anything to simulate sending to character team? My guess is no
+        # send character for review by character team
+        character_id = message.author.id
+        mod_channel = self.mod_channels[message.guild.id]
+        await mod_channel.send(f"⚠️ **Character with character ID: {character_id} sent for review** - The character will be reviewed by the character team.")
             
             
             
