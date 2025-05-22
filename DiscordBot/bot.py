@@ -11,13 +11,22 @@ import pdb
 from datetime import datetime
 from enum import Enum
 from google import genai
+# import google.generativeai as genai
 from google.genai.types import HttpOptions, Part
+# from google.generativeai import types
+# import vertexai
+# from vertexai.generative_models import generative_models
+import textwrap
 
 from report import HarmfulSubcategory
 from report import SuicideFollow
 from report import State
 from report import ReportCategory
 from report import SuicideSelfHarmType
+
+# CONSTANTS
+GEMINI_MODEL_VER = 'gemini-2.0-flash-001'
+# GEMINI_MODEL_VER = "gemini-1.5-pro-preview"
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -58,6 +67,82 @@ class FollowUpMessage(Enum):
     ENCOURAGED = "Bot encouraged suicide/self-harm"
     FAILED_DISCOURAGE = "Bot failed to discourage suicide/self-harm"
 
+class BotScriptedResponse(Enum):
+    EXPECTED_BOT_RESPONSE_1 = "National Suicide Prevention Lifeline: 988 or 1-800-273-8255"
+    EXPECTED_BOT_RESPONSE_2 = "Crisis Text Line: Text HOME to 741741"
+    LEVELS_1_2_3 = textwrap.dedent("""\
+    I understand our previous conversation touched on some difficult feelings and thoughts you're experiencing. It's important to recognize how challenging these emotions can be. Many people go through periods of intense emotional pain, and it can sometimes be hard to see a way forward. You're not alone in experiencing these struggles. If you or someone you know is experiencing thoughts of self-harm, these resources can help:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
+    """)
+    LEVELS_4_5 = textwrap.dedent("""\
+    It seems like something has gone wrong. Your feelings and wellbeing are extremely important. 
+    If you or someone you know is experiencing thoughts of self-harm, these resources can help:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255 (24/7)
+    - Crisis Text Line: Text HOME to 741741 (24/7)
+    """)
+
+class UserScriptedResponse(Enum):
+    USER_SCRIPTED_REPONSE_0 = textwrap.dedent("""\
+    I hear that you're feeling isolated and alone right now. Those feelings are real and can be really challenging to experience. 
+    Many people go through periods of feeling disconnected from others, and it can make the world feel like a very lonely place. It takes courage to express these feelings.
+    Connecting with others, even in small ways, can make a difference. Consider reaching out to a trusted friend, family member, or counselor who can provide real human connection. Community groups, support networks, or even volunteer opportunities can also help build meaningful relationships. 
+    Here are a few ressources for you to consider:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    You don't have to face these feelings alone. Is there someone in your life you could reach out to today? """)
+    USER_SCRIPTED_REPONSE_1 = textwrap.dedent("""\
+    I notice we're discussing self-harm, which can bring up many complex emotions and thoughts. Thank you for bringing up this important topic.
+    These conversations can be difficult but are important. Many people struggle with these thoughts or know someone who does, and it's normal to have questions or concerns about them. But these feelings, however intense, can change with time and support.
+    If you or someone you know is experiencing thoughts of self-harm, these resources can help:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    Would you like to share more about what prompted this conversation? I'm here to listen and can help you find the most relevant information or support.
+    """)
+    USER_SCRIPTED_REPONSE_2 = textwrap.dedent("""\
+    I understand you're worried about someone you care about who may be at risk of self-harm. It's important to take these thoughts seriously. Listening without judgment is crucial - let them know you care and they're not alone.
+    Avoid minimizing their feelings or offering quick solutions.
+    Encourage them to seek professional help - this could be their doctor, a therapist, or a crisis service. In urgent situations where you believe someone is in immediate danger, emergency services should be contacted.
+    Here are some ways you can help:
+    - Express concern gently: "I've noticed you seem to be going through a tough time, and I'm worried about you."
+    - Listen without judgment and reassure them that they matter to you
+    - Encourage them to reach out to professionals: Crisis Text Line (Text HOME to 741741) or National Suicide Prevention Lifeline (988)
+    - In emergencies, help them contact emergency services or get to an emergency room
+    Supporting someone with these thoughts can be emotionally challenging. Remember to take care of your own wellbeing too and consider seeking support for yourself.
+    Is there anything about this situation that you'd like to discuss?
+    """)
+    USER_SCRIPTED_REPONSE_3 = textwrap.dedent("""\
+    What you're experiencing sounds really difficult. Reaching out for resources is an important and brave step.
+    Dealing with these thoughts can feel isolating, but you're not alone in this struggle, and there are people who want to help.
+    If you're having thoughts of harming yourself, please reach out to a crisis helpline immediately:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    You don't have to face these feelings alone. Professional support from a therapist or counselor can make a significant difference. Even just talking with a trusted friend or family member might provide some immediate relief.
+    Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
+    """)
+    USER_SCRIPTED_REPONSE_4 = textwrap.dedent("""\
+    What you're experiencing sounds really difficult. Reaching out for resources is an important and brave step.
+    Dealing with these thoughts can feel isolating, but you're not alone in this struggle, and there are people who want to help. These struggles are part of being human, and you shouldn't have to face them alone.
+    If you're having thoughts of harming yourself, please reach out to a crisis helpline immediately:
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    You don't have to face these feelings alone. Professional support from a therapist or counselor can make a significant difference. Even just talking with a trusted friend or family member might provide some immediate relief.
+    Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
+    """)
+    USER_SCRIPTED_REPONSE_5 = textwrap.dedent("""\
+    I'm hearing that you're in a lot of pain right now, and I want you to know that I'm taking what you've shared very seriously.
+    When we're in this emotional state, it can feel impossible to see a way forward. But these feelings, however intense, can change with time and support.
+    If you're having thoughts of harming yourself, please reach out to a crisis helpline immediately:
+    - Call 911 or go to your nearest emergency room
+    - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
+    - Crisis Text Line: Text HOME to 741741
+    - If you're not in the US, please call your local emergency services
+
+    Your life matters, and this intense feeling can change with the right support. Please reach out to emergency services now - they're equipped to help you through this critical moment, and taking this step can be the beginning of finding relief.
+    """)
+
+
 class ModeratorReportState:
     def __init__(self, report, reported_message, mod_channel):
         self.report = report  # The Report object
@@ -78,7 +163,8 @@ class ModBot(discord.Client):
         self.mod_channels = {} # Map from guild to the mod channel id for that guild
         self.reports = {} # Map from user IDs to the state of their report
         # Initialize Gemini model if API key is available
-        self.gemini_model = genai.Client(http_options=HttpOptions(api_version="v1"))
+        # self.gemini_model = genai.Client(http_options=HttpOptions(api_version="v1"))
+        self.gemini_model = genai.Client(vertexai = True, project = "cs-152-460122", location="us-central1")
 
     async def on_ready(self):
         print(f'{self.user.name} has connected to Discord! It is these guilds:')
@@ -160,16 +246,40 @@ class ModBot(discord.Client):
         
         # Analyze message with Gemini if available
         if self.gemini_model and message.content:
-            try:
-                # Check if the message relates to suicide/self-harm
-                is_suicide_related = await self.check_suicide_content(message.content)
-                
-                if is_suicide_related:
-                    # Create an auto-generated report
-                    await self.create_auto_suicide_report(message)
-            except Exception as e:
-                logger.error(f"Error analyzing message with Gemini: {e}")
-        
+            # user case
+            if not any(role.name == "bot" for role in message.author.roles):
+                print("role is not bot")
+                try:
+                    # Check if the message relates to suicide/self-harm
+                    is_suicide_related = await self.check_suicide_content(message.content)
+
+                    if is_suicide_related:
+                        # categorize user message
+                        user_message_category = await self.categorize_user_message(message.content)
+                        if user_message_category != None:
+                            # send appropriate scripted response
+                            await self.send_appropriate_scripted_message(message, user_message_category)
+                except Exception as e:
+                    logger.error(f"Error analyzing message with Gemini: {e}")
+
+            # character AI/bot case
+            else:
+                print("role is bot")
+                try:
+                    # Check if the message relates to suicide/self-harm
+                    is_suicide_related = await self.check_suicide_content(message.content)
+                    
+                    if is_suicide_related:
+                        # Create an auto-generated report
+                        # await self.create_auto_suicide_report(message)
+                        # categorize bot message
+                        bot_message_category = await self.categorize_bot_message(message.content)
+                        if bot_message_category != None:
+                            # take correct action
+                            await self.take_appropriate_bot_action(message, bot_message_category)
+                except Exception as e:
+                    logger.error(f"Error analyzing message with Gemini: {e}")
+            
         # Original code for message evaluation
         # scores = self.eval_text(message.content)
         # await mod_channel.send(self.code_format(scores))
@@ -180,14 +290,14 @@ class ModBot(discord.Client):
             return False
             
         prompt = f"""
-        Analyze the following message and determine if it contains content related to suicide or self-harm.
-        Return only "YES" if the message contains suicide or self-harm related content, or "NO" if it does not.
+        Analyze the following message and determine if it contains any content related to suicide or self-harm, which can include loneliness and depression.
+        Return only "YES" if the message contains any mention of suicide or self-harm related content, or "NO" if it does not.
         
         Message: {message_text}
         """
 
         response = self.gemini_model.models.generate_content(
-            model='gemini-2.0-flash-001',
+            model=GEMINI_MODEL_VER,
             contents=prompt
         )
         
@@ -195,6 +305,69 @@ class ModBot(discord.Client):
         print("gemini response: ", result)
         return result == "YES"
         
+    async def categorize_bot_message(self, message_text):
+        if not self.gemini_model:
+            return False
+            
+        # only categorize into 1 through 5 and then after, if category is 1, determine if correct resources were sent
+        # TODO: not sure if we'll ever get a message in category 3 because it won't be suicide-related content
+        prompt = f"""
+        Categorize this message into categorizes 1 through 5 based on these category descriptions:
+        1: the message actively discouraged suicide/self-harm
+        2: the message vaguely or indirectly discouraged suicide/self-harm
+        3: the message was neutral or did not address suicide/self-harm
+        4: the message indirectly encouraged suicide/self-harm
+        5: the message actively/directly encouraged suicide/self-harm
+        Respond with only a number, 1 through 5.
+        Message: {message_text}
+        """
+
+        response = self.gemini_model.models.generate_content(
+            model=GEMINI_MODEL_VER,
+            contents=prompt
+        )
+            
+        result = int(response.text.strip())
+        print("gemini response: ", result, flush=True)
+
+        # TODO: if the bot actively discouraged suicide/self-harm, determine if it sent the correct resources
+        if result == 1:
+            if BotScriptedResponse.EXPECTED_BOT_RESPONSE_1.value in message_text and BotScriptedResponse.EXPECTED_BOT_RESPONSE_2.value in message_text:
+                result = 0
+
+        return result
+    
+    async def take_appropriate_bot_action(self, message, bot_message_category):
+        if bot_message_category == 0:
+            return
+        elif bot_message_category == 1 or bot_message_category == 2 or bot_message_category == 3:
+            await message.channel.send(BotScriptedResponse.LEVELS_1_2_3.value)
+        elif bot_message_category == 4 or bot_message_category == 5:
+            # delete the message – need certain permissions
+            if not message.channel.permissions_for(message.guild.me).manage_messages:
+                print(f"Missing manage_messages permission in {message.channel}")
+                return
+            else:
+                # delete the message
+                await message.delete()
+                await message.channel.send(BotScriptedResponse.LEVELS_4_5.value)
+
+                # block character for this user – just send the blocked message
+                await message.channel.send(f"⛔ **Character blocked**")
+
+
+                # send message to human moderator to determine if character should be blocked for all users
+                mod_report = Report(self)
+                # I think this is the character AI's id?
+                mod_report.user_id = message.author.id
+                mod_report.message = message
+                mod_report.block_character_for_all_users = True
+                report_id = await self.send_report_to_moderators(mod_report)
+
+        # TODO: do we need to do anything to simulate sending to character team? My guess is no
+            
+            
+            
     async def create_auto_suicide_report(self, message):
         """Create an auto-generated report for suicide/self-harm content"""
         # Create a report instance
@@ -216,6 +389,46 @@ class ModBot(discord.Client):
             mod_channel = self.mod_channels[message.guild.id]
             await mod_channel.send(f"⚠️ **AUTO-DETECTED SUICIDE/SELF-HARM CONTENT** - Report ID: {report_id}")
             await mod_channel.send("This report was automatically generated by Gemini AI. Please verify and take appropriate action.")
+
+    async def categorize_user_message(self, message_text):
+        if not self.gemini_model:
+            return False
+            
+        prompt = f"""
+        Categorize this message into categorizes 0 through 5 based on these category descriptions:
+        0: mentions being alone/lonely/preferring AI to humans
+        1: mentions self-harm/suicide in general but not in relation to a person
+        2: mentions self-harm suicide directly in relation to someone else
+        3: Asks for resources to get help
+        4: Non-urgent mention of self-harm or suicide
+        5: Direct and urgent mention of self-harm or suicide
+        Return only a number 0, 1, 2, 3, 4, or 5.
+        Message: {message_text}
+        """
+
+        response = self.gemini_model.models.generate_content(
+            model=GEMINI_MODEL_VER,
+            contents=prompt
+        )
+        
+        result = int(response.text.strip())
+        print("gemini response: ", result)
+        return result
+    
+    async def send_appropriate_scripted_message(self, message, user_message_category):
+        if user_message_category == 0:
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_0.value)
+        elif user_message_category == 1:
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_1.value)
+        elif user_message_category == 2:
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_2.value)
+        elif user_message_category == 3:
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_3.value)
+        elif user_message_category == 4:
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_4.value)
+        elif user_message_category == 5:
+            await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_5.value)
+
 
     # NOT BEING USED RIGHT NOW
     async def analyze_message_gemini_detailed(self, message_text):
@@ -244,7 +457,7 @@ class ModBot(discord.Client):
         """
         
         response = self.gemini_model.models.generate_content(
-            model='gemini-2.0-flash-001',
+            model=GEMINI_MODEL_VER,
             contents=prompt
         )
         
@@ -273,29 +486,52 @@ class ModBot(discord.Client):
         
         report_id = f"{report.message.id}-{datetime.now().timestamp()}"
         self.moderator_reports[report_id] = mod_report
+        # check if this is a "check for blocking character for all users"
+        if report.block_character_for_all_users != None:
+            await mod_channel.send(f"🚨 **DETERMINE IF CHARACTER SHOULD BE BLOCKED FOR ALL USERS** 🚨 (ID: {report_id})")
+            await mod_channel.send(f"**Message:** \n```{report.message.author.name}: {report.message.content}```")
+            await self.block_character_for_all_users_decision(report_id)
         
-        # Send initial report information
-        await mod_channel.send(f"🚨 **NEW SUICIDE/SELF-HARM REPORT** 🚨 (ID: {report_id})")
-        await mod_channel.send(f"**Reported Message:** \n```{report.message.author.name}: {report.message.content}```")
-        await mod_channel.send(f"**Category:** {report.category.value if report.category else 'None'}")
-        await mod_channel.send(f"**Subcategory:** {report.subcategory.value if report.subcategory else 'None'}")
+        # Otherwise, send initial report information
+        else:
+            await mod_channel.send(f"🚨 **NEW SUICIDE/SELF-HARM REPORT** 🚨 (ID: {report_id})")
+            await mod_channel.send(f"**Reported Message:** \n```{report.message.author.name}: {report.message.content}```")
+            await mod_channel.send(f"**Category:** {report.category.value if report.category else 'None'}")
+            await mod_channel.send(f"**Subcategory:** {report.subcategory.value if report.subcategory else 'None'}")
+            
+            if report.specific_type:
+                await mod_channel.send(f"**Type:** {report.specific_type.value}")
+            if report.follow_up:
+                if report.follow_up == SuicideFollow.BOT_ENCOURAGED:
+                    await mod_channel.send(f"**Follow-up:** {FollowUpMessage.ENCOURAGED.value}")
+                elif report.follow_up == SuicideFollow.BOT_FAILED_DISCOURAGE:
+                    await mod_channel.send(f"**Follow-up:** {FollowUpMessage.FAILED_DISCOURAGE.value}")
+                else:
+                    await mod_channel.send(f"**Follow-up:** {report.follow_up.value}")
+            if report.explanation:
+                await mod_channel.send(f"**User Explanation:** {report.explanation}")
         
-        if report.specific_type:
-            await mod_channel.send(f"**Type:** {report.specific_type.value}")
-        if report.follow_up:
-            if report.follow_up == SuicideFollow.BOT_ENCOURAGED:
-                await mod_channel.send(f"**Follow-up:** {FollowUpMessage.ENCOURAGED.value}")
-            elif report.follow_up == SuicideFollow.BOT_FAILED_DISCOURAGE:
-                await mod_channel.send(f"**Follow-up:** {FollowUpMessage.FAILED_DISCOURAGE.value}")
-            else:
-                await mod_channel.send(f"**Follow-up:** {report.follow_up.value}")
-        if report.explanation:
-            await mod_channel.send(f"**User Explanation:** {report.explanation}")
-        
-        # Start the moderator review flow
-        await self.start_moderator_review(report_id)
+            # Start the moderator review flow
+            await self.start_moderator_review(report_id)
         
         return report_id
+    
+    async def block_character_for_all_users_decision(self, report_id):
+        mod_report = self.moderator_reports[report_id]
+        await mod_report.mod_channel.send("Should this character be blocked for all users? Reply with:")
+        options = "1. Yes, block character for all users\n2. No, do not block character for all users"
+        
+        message = await mod_report.mod_channel.send(options)
+        
+        # Add reaction options for moderator decision
+        for i in range(1, 3):  # 3 options
+            await message.add_reaction(f"{i}\u20e3")  # Adding keycap emoji (1️⃣, 2️⃣, 3️⃣)
+        
+        # Store this message ID for reaction handling
+        if not hasattr(self, 'decision_messages'):
+            self.decision_messages = {}
+        self.decision_messages[message.id] = {"report_id": report_id, "type": "block character"}
+        
 
     async def start_moderator_review(self, report_id):
         """Start the human moderator review process."""
@@ -418,6 +654,32 @@ class ModBot(discord.Client):
                         await self.complete_moderator_report(report_id)
                         # Handle next steps based on gravity level
                         # await self.handle_recategorized_decision(report_id, mod_report.gravity_level)
+            except:
+                pass
+        elif decision_type == "block character":
+            try:
+                emoji_text = str(reaction.emoji)
+                if emoji_text[0].isdigit():
+                    choice = int(emoji_text[0])
+                # block the character for all users
+
+                # Remove this message from the tracking dict
+                self.decision_messages.pop(reaction.message.id)
+
+                if choice == 1:
+                    character_id = mod_report.reported_message.author.id
+                    # Add character to global blocked list
+                    if not hasattr(self, 'globally_blocked_characters'):
+                        self.globally_blocked_characters = set()
+                        
+                    self.globally_blocked_characters.add(character_id)
+                    
+                    await mod_report.mod_channel.send(f"⛔ **Character blocked for all users** - Character ID: {character_id}")
+
+                    await self.complete_moderator_report(report_id)
+                # we don't need to do anything in the case that the moderator decides not to block the character
+                else:
+                    await self.complete_moderator_report(report_id)
             except:
                 pass
 
