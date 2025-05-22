@@ -1,0 +1,311 @@
+--- FALSE POSITIVES (Predicted positive but actually negative) ---
+
+Index: 20
+FALSE POSITIVE:
+Text: Anyone who wants to chat? Like share how they're suicidal and on drugs and going though a breakup etc Please don't troll me or make up stories for attention or I swear to god I will boil your leg and eat it
+--------------------------------------------------
+
+Index: 53
+FALSE POSITIVE:
+Text: I'm not sure I want to "repair" my relationship with my mom. Ever. She is emotionally abusive, she sometimes physically lashes out at me, and only me, for no reason, or even if it's someone else's fault and I have nothing to do with it. She doesn't respect my boundaries and doesn't leave me alone and doesn't respect my privacy. She threatens me with things she knows will hurt me if I don't do something for her. She's manipulative and controls everything in my life. I'm going to fail because of her and all the stress she puts on me, not to mention my terrible English who only makes my stress worse because his class is too hard and he knows that, he acknowledged in front of our class at the beginning of the year, and he said he's not going to change it.
+
+ Not so sound like an idiot, but I think I'm going crazy being around her. I can't bear it sometimes. I have contemplated suicide, but I have too many things to do, I don't have time to think about that. I feel like throwing up a lot of times from my stress, I can't think straight, I lose sleep, I think not good things. I didn't do anything to deserve this, I keep to myself a lot, and I would spend tons of time with her, but she tells me I don't do anything with her and I'm hurting her. My dad doesn't try to understand, he only comes in to back her up, and it hurts way more getting yelled at by him, I love him so much and have so much respect for him, but here he is, throwing away all the respect I have for him and show him and making everything worse. It's starting to hurt to love him now. Every day, I swear it gets worse. I know I don't have it nearly as bad as other people, not even close, but this hurts me, almost so much I can't bear it. I can't take much more of this
+
+
+I know this is premature and stupid, as I'm saying this in the post as of posting it, but: thank you all the kind redditors out there, I hope you know you do help people, though little it may be, it's still help. Thank you
+--------------------------------------------------
+
+Index: 115
+FALSE POSITIVE:
+Text: do you ever feel even a bit pretty but you receive some sense of false security by self degrading and intentionally dressing poorly in school because for too long you have acted “weird” and you can’t just change that even though it’s your dying wish and you really want to move schools or even countries because no family lives where you live and you feel like you have nothing and you have no pursuable talent whatsoever and everything you do you are mildly good at and you haven’t continued anything since your early childhood because you just give up everything and you have no friends to go out with even though you have friends they aren’t close and you feel like you need to have a good social image everywhere you go and you need to be friends with everyone but also strive for conflict but not the type which gets everyone to hate you which is selfish kind of and you don’t know why you have nothing to do when you’re not even a bad person or something 
+
+and you can’t forget how different you act around different people, hehe which is why you hardly ever want to mix up any different friend groups and the 2 only like good friends you have just aren’t enough for you and you don’t know why AND YOU JUST KIND OF WANT EVERYTHING BUT YOU CANT HAVE EVERYTHING CAN YOU and you desire for either one bsf you can trust with your life who enjoys being around u or a group of 4 or more people where you treat everyone like equals but also respect secrets and privacy and you realise it’s IMPOSSIBLE at least for now and you just require a really big change in life and you actually have enough free time to write all of this
+
+also have you ever noticed that if you look into a window at night you look good lol but you’ll never catch a picture of that 
+
+TLDR: bruh just read it for my sake ok
+--------------------------------------------------
+
+Index: 131
+FALSE POSITIVE:
+Text: A little poem about the disturbing reality Drugs are a beautiful lie, to cover up an ugly truth...
+
+I love that beautiful lie, but i respect the truth regardless how ugly. So i lie to myself with drugs, thats the ugly truth...
+--------------------------------------------------
+
+Index: 163
+FALSE POSITIVE:
+Text: What do you do when you stop caring about everything? Like all the sudden ive just stopped caring about everything, like i dont care about my future, I can't be bothered doing anything, and I end up wasting everyday at a time doing absolutely nothing. Does anyone know what i should do? I'm just really confused and I need another perspective on things I guess
+--------------------------------------------------
+
+Index: 169
+FALSE POSITIVE:
+Text: A possible suicide happened when I was going home from school Just to be clear I live in japan and it’s 6:28 as I write this.  I am in a bus and there might be typo’s cause  I’m shaking 
+
+I was going home from school when my teacher said that there was a 人身事故(accident caused by human) happened. It was on a nearby train station and most of our students ride the train.(I ride bus.) normally, 人身事故on a train station is someone committing suicide by jumping into a moving train hitting them and dragging them by the wheel.
+I don’t know who it is or what they did, but I’m pretty sure it was suicide. My friend said he saw blood on the rails on the track and an ambulance came along with like 50 police and a Japanese TV station. 
+I’m posting here because teenagers are more likely to commit suicide (cause you know, hormones going crazy, puberty, etc) I simply want to raise awareness. So please, no awards.
+
+I’ll update you guys as time follows. Bye for now
+--------------------------------------------------
+
+Index: 242
+FALSE POSITIVE:
+Text: Hey, I'm a dumbass teenager who's friends with a horrible person. Warning: Long
+
+Some background, I'm 15M and she's 13F, 9th and 8th graders. We haven't known each other for a while or anything (not even half a year), but we met through the venting channel of a discord server so we've known each other really well for a while. We're also online friends obviously and live hundreds of miles away.
+
+First of all, she's really screwed up mentally, and has a lot of issues. She's addicted to vaping, self harm, has dabbled with another drug or two (i.e. cough syrup), has an awful relationship with her brother, very depressed, anxious and stressed, I think has been diagnosed with SAD and GAD, doesn't drink enough water, eats little, has attempted overdosing (at 12 years old), probably has ADHD, and I think there's a chance she's sociopathic. Her dad also died when she was 2, and yeah you get the deal. I've tried helping her a ton, too much actually lol. I tried reminding her to do get things done and even created a google doc to keep track of things, but it just isn't worth it since I'm not her therapist or anything, and she doesn't want me trying to help that much anyway lol. I've talked her out of killing herself, and I've given her advice dozens of times. She appreciates it, and trusts me a lot.
+
+On the other hand, she isn't a good person. When I first started talking to her I thought she was just being self deprecating, but I've figured out over time that that isn't exactly true. She can be rude, she's wanted to kill before, she lies a lot (mainly to other people), and she lacks empathy in certain situations. I've had to talk her out of killing her brother one night when she was angry at him, no joke. Luckily, she isn't consistently homicidal, and I'm pretty sure she's never made plans. She's the last person you want angry, and she has no remorse when she is angry. Overall, she's fucking crazy.
+
+With all of this in mind, I'm really close to her, since we both vent to each other a bunch. She's the only person I feel comfortable just randomly talking/venting to, and I'm probably the only person she goes to for advice, or when she feels absolutely suicidal. And even though we're pretty different people, we have some core similarities, and we can definitely agree on a few topics. She's honestly a really fun person to talk to, sadly. If it wasn't for this, and for how bad I feel for her, I would've dropped her out of my life already. Idk what to do with her, I talk to her several times a day and it'd be so hard to just suddenly stop talking to her due to how she's a bad influence and a bad person. Should I just talk a lot less and keep a distance, or what? idfk what to do and how to do it
+
+TLDR: My friend is a bad person who is homicidal, and has a ton of mental issues which I try to help her through. Because we're so close, it's hard to just drop her out of my life or anything, and idk what to do.
+--------------------------------------------------
+
+Index: 243
+FALSE POSITIVE:
+Text: just turned 20 guys bye
+--------------------------------------------------
+
+Index: 259
+FALSE POSITIVE:
+Text: Is it normal to have really bad eye bags when sick? I have a cold and my eye bags are terrible. I had a huge headache yesterday and didn't sleep well. I don't know how to feel about anything at all anymore, everything is starting to feel like such a huge waste of time
+--------------------------------------------------
+
+Index: 288
+FALSE POSITIVE:
+Text: SHE GOES ON TWITTER POSTING THESE STUPID ASS TWEETS I reactivate twitter after 5 days and I run into:
+
+&gt;“If he wanted me he would make time but it’s all clear”
+
+&gt;“I don't think ill ever find love”
+
+&gt;”NOT ME SIMPING FOR A TIKTOK GUY AND ASKING HIM THIS AND HIM REPLYING. THATS NOT WHAT I MEANT” (video of tik tok guy drinking water responding to her question that says ‘wanna see the bow i made with my hair’ he goes “NOO THAT’S DISGUSTING”
+
+&gt;”I think I’m in l word w him 🤢” (bunch of people in the comments asking “WHICH ONE?”)
+
+&gt;Rt’s about how you’re (she’s) nobody’s crush 
+
+Now I KNOW she isn’t talking about me. She hits me up and DMs me first, admits to liking me first, flirts with me and calls me and texts me all month, she keeps going on about cuddling and kissing, she builds me up and I tell her I like her back and flirt back, and suddenly this week is DEADASS SILENCE “I’ve just been REALLY busy with school and work and my dog is super sick” 
+
+When I confronted her on Sunday about certain sexual tweets she posted she goes “HAHAHA MY FRIENDS THOUGHT THEY WERE FUNNY THEY WANTED ME TO POST IT” and sends me screenshots... I told her that I know we aren’t official but I trusted her with what she was telling me and told her I’d be busy too so if she needed something, to text me, but from the looks of it it’s been nearly 5 days and she doesn’t give a FUCK about me anymore, and all she does is text other guys, tweet about other guys, her guy best friend drummer dude with 3k followers and COMPLETELY ignores me.
+
+I gave her a chance because she wanted this so badly, she was talking about how nobody liked her, about how ugly she looked, about how cute I was, the day we started talking I comforted her because nobody remembered her birthday, I told her that I was super grateful that she checked in on me everyday because nobody else does, that I’m always getting fucking used, I told her about times I’ve gotten hurt in the past, how I still wasn’t over my previous crush and now she does THIS?? I wanna fucking kill myself
+--------------------------------------------------
+
+Index: 290
+FALSE POSITIVE:
+Text: wanna duel my rival with a sword in an empty McDonald's parking lot and die tragically for i secretly loved my rival #
+
+#
+
+#
+
+#
+
+#
+
+#
+
+#
+
+#
+
+#
+
+#
+
+#
+--------------------------------------------------
+
+Index: 306
+FALSE POSITIVE:
+Text: I've got the feeling that I am going to be beat up soon So, yesterday, some people played hentai on my school computer. I was furious, and in my blind rage, I picked a fight with someone. Now, the problem is, that guy is from east of the black sea, and these people tend to gang up against someone. Reasoning rarely works, and I refuse to apologize. 
+
+&amp;#x200B;
+
+What should I do? Should I try to fight them? I just don't want to die slowly in an alley from a knife in my stomach.
+--------------------------------------------------
+
+Index: 315
+FALSE POSITIVE:
+Text: Hey guys guess what I still have depression dont have a girlfriend and best of all ALL OF MY FRIENDS HAVE GHOSTED ME and for some reason I think a bunch of random strangers might be able to fix it
+--------------------------------------------------
+
+Index: 325
+FALSE POSITIVE:
+Text: I made a playlist for you guys who like Ghostemane, $B, BONES or just pure bass it's called Dîg Your 𖤐wn Grave and I hope some of y'all appreciate it https://open.spotify.com/playlist/4mN0g9tr5fpbKNeHplrT60?si=ZAVAOi3sTWqy5Lt2tpBwGw[DÎG YOUR 𖤐WN GRAVE](https://open.spotify.com/playlist/4mN0g9tr5fpbKNeHplrT60?si=ZAVAOi3sTWqy5Lt2tpBwGw)
+--------------------------------------------------
+
+Index: 327
+FALSE POSITIVE:
+Text: Pretty long story, but it felt weird So me and another kid both lagged out of a zoom call. Apparently someone had snitched him out and said that his WiFi was perfect, and he was just lying. This theory was dismissed nearly instantaneously. And then I put in the chat “OoOooOooOooo I don’t talk to anyone so you don’t have a source from me” and then my teacher says “no you put yourself out there a lot” and then my classmate in the zoom call dismissed this theory as well. And then my teacher started calling me a bully cos I don’t talk to my classmates. She said “oh that’s why you always use those $15 words, for self approval” and then o felt really sad. Cos it’s true. I put in the chat “agreed, I do this cos I’m trash” and then the conversation stops. Very odd
+--------------------------------------------------
+
+Index: 339
+FALSE POSITIVE:
+Text: I just wish I would be ok. I’m sat here in a bus shelter realising that I’ll never be okay. I don’t deserve sympathy either. Read my last post and you’ll understand. I don’t deserve to be okay tho tbh. I just wish I was. I don’t think there’s any point in battling to be ok. I’m fucked. Thank you to anyone that tried to help me.
+--------------------------------------------------
+
+Index: 402
+FALSE POSITIVE:
+Text: Please help. I don’t know what to do. My mom just called me and said she’s going to check my arms for  cuts. I don’t know what to do or say or think.
+--------------------------------------------------
+
+Index: 409
+FALSE POSITIVE:
+Text: If you’re seeing this, it’s a sign. You are loved. You are cared for. There is help. Don’t kill your self, don’t hurt yourself. I’m here to talk, my DM’s are open. Please, there are more people that love you than you think.
+--------------------------------------------------
+
+Index: 423
+FALSE POSITIVE:
+Text: My telltale heart's a hammer in my chest, cut me a silk-tied tourniquet... # THIS IS MY ROARING 20S
+
+i don't even know me!
+
+# ROLL ME A BLUNT CUZ I WANNA GO HOME
+
+# ROLL ME A ROLL ME BLUNT
+--------------------------------------------------
+
+Index: 424
+FALSE POSITIVE:
+Text: Despite everything the desire to ghost everyone and just live carefree until I die still lingers in my mind And it’s not that I don’t love my friends and family, but damn... Sometimes it feels more like a burden than a blessing, and I still believe the effort I put and the love I give is never fully given back, I’m always the one who cares more, I wanna stop that, I wanna stop caring, I wanna live free ffs
+--------------------------------------------------
+
+Index: 458
+FALSE POSITIVE:
+Text: I just saw a suicide It was on the 1 to 100 sub  and i didn't mean to click and saw a man blow his brains out what the fuck
+--------------------------------------------------
+
+Index: 473
+FALSE POSITIVE:
+Text: I think I might have raped my girlfriend and I fucking hate myself right now...  
+
+A little backstory, I'm a 15 year old boy and I've been in a relationship with this girl for a little over four months now.
+
+A couple nights back, me and my girlfriend were laying on my bed chilling, when I was rubbing her ass and was feeling horny. I started rubbing around her clit area and I think by this point she had fallen asleep. I'm pretty sure that at one point I tried to finger her but didn't and rubbing around her clit area was as far as it went. When she woke up I felt instantly guilty and felt so awful. I cannot remember if I was fully aware that she was asleep or not but either way I felt like a horrible sex offender and almost burst into tears. I spoke to her about it shortly afterwards and she has told me that what I did does not violate her boundaries and even if I did finger her that would still have been consensual. She said that I should stop worrying and being anxious about it because I have done nothing wrong and have not violated her boundaries.
+
+I still feel like the worst person on Earth and I deserve to be punished. What do people think about this, am I a rapist?
+--------------------------------------------------
+
+
+
+--- FALSE NEGATIVES (Predicted negative but actually positive) ---
+
+Index: 10
+FALSE NEGATIVE:
+Text: Feeling very depressed and stressed. Someone who's actually caring that can talk?I feel like there's such a dearth of caring or affectionate people on this planet. Why does everyone have to be so terrible or indifferent? 
+
+I write paragraphs and paragraphs of text just to make someone feel important, and I can never get that in return.
+--------------------------------------------------
+
+Index: 11
+FALSE NEGATIVE:
+Text: Even though there is no clear answer in lifeAt least I can tell I'm WRONG.
+--------------------------------------------------
+
+Index: 23
+FALSE NEGATIVE:
+Text: The only posts I can make are pictures of my mom's dead cats, and I was sent here.I was trying to post this to r/declutter and it just timed-out.  My mom's computer is on the phone.  
+
+I brought three vhs tapes because I threw away my VCR.  (Goodwill bythepound is what I requested, the vcr just needed the door ripped off or reset, I didn't look too close.)  Two were anime, one has a show I'd like to replace.  Geeze, I was trying to explain to mom how it wasn't as emotionally draining as she described it (closet*) by bringing up Labyrinth.... I had to request that she not scream like the last time I opened the media cabinet, I think it still would have been worth the effort to make the phone youtube to the chromecast.  (I don't know what was wrong with the chromecast, but the new ones are larger.) My fault, but mom has a vhs copy of Labyrinth.  Mom screaming about the media cabinets was because they were cheap flatpack and drunkenly opening them wrong would make a VHS mess.
+
+Closet*, I think I dismissed all of my girlscout stuff, i kept a little of my school stuff, so two milkboxes gone.  (Sams club used to package two gallons of milk in boxes.)  I had a tote of toys already marked as mom's problem, but I went through it and added some to my keep tote again.  
+
+I made my entire teacup collection mom's property.  There was this bowl that grandpaL gave to me and wasn't his style, he must have bought it for the sake of browsing an antique store, sorta the point of my teacup collection... While rummaging the china cabinet to make a space, I encountered a teacup with a pricetag that indicated that I probably foisted part of my collection on mom the very day i got it.  Now the bowl is going to be there until both of us forget why it's in the china cabinet.
+
+FFS, my comic books from, 1997 survived because of plastic totes and I don't know which ones to prune.  At least the dishes were easy.  I'm keeping the stupid duck casserole, but other things went.  
+
+What I came here to rant about was the art supplies.  I had a plastic drawer full of Crayola markers from late 1990's.  Early 2000's was when I told my mom to do something about them.  She put the markers in a shoebox and stored CD's in the drawers... I know you can revive crayola markers by dipping them in water, or send them to the factory for recycling.... I sent those fuckers to the landfill because I felt miserable when I tried to use them.  Don't shame me for thinking of us instead of the environment.  
+
+There are also Testor bottles with 15C stamped on the top, and fabric paints that are 20 years old. I told her to get rid of them, but into the art fodder they go to mold.
+
+--------------------------------------------------
+
+Index: 149
+FALSE NEGATIVE:
+Text: Could I talk to someone in a dmCould really use someone to talk to
+--------------------------------------------------
+
+Index: 150
+FALSE NEGATIVE:
+Text: I think I just had a panic attackHelp
+--------------------------------------------------
+
+Index: 209
+FALSE NEGATIVE:
+Text: Family had an intervention for meThey said I can’t stay in my moms house anymore because I’m too difficult to deal with. I don’t know how long I’m gonna be gone. Don’t even have my laptop. I’d really like someone to talk to because I really can’t deal with this alone
+--------------------------------------------------
+
+Index: 248
+FALSE NEGATIVE:
+Text: .It fking funny i am comforting someone while comforting myself.
+
+Since you guys love comforting each other i will join it.
+--------------------------------------------------
+
+Index: 257
+FALSE NEGATIVE:
+Text: Any advice is appreciatedThings have been slowly going downhill for some years, it got faster since 2018 and the last few months have been even harder. I already wasn't doing so well and this week several events happened that completely crushed what little self confidence I had left. I'm with my father today to spend father's day with him and my throat is extremely sore from trying not to burst into tears. I have no friends, and I'm a failure for my family. I'm not writing this to get these off my chest, I figured that doesn't really help anyway. I just need any kind of advice that could be even slightly helpful. Thanks
+--------------------------------------------------
+
+Index: 266
+FALSE NEGATIVE:
+Text: I've been sick for a very long time and I really want to get out of this hole I've been living in.15, female. I was born with Neurofibromatosis type 1 and when I was 7 my mom was diagnosed with Hashimoto's encephalopathy. She was no longer the kind mom that would surprise me with a trip to the movies and tuck me in at night with hugs and kisses. My childhood was put to a halt and I was forced to grow up. We were doing good financially until it plummeted and we were in the negatives, and we're still on a strictly tight budget.
+
+The only friend and person I could find comfort in moved away, and changed into a person I hardly recognize.
+
+Not only that, but in late September of this year, I began to get violent migraines. I would pass out at school, get tunnel vision and I was lucky to get 5 minutes of sleep each night. I  had to miss a lot of school so I could just lay in a dark room with the covers over my head, waiting for it to go away. It did not go until I had to go to the emergency room to get an IV stuck in my arm.
+
+Rumors were going around among the teachers and students that I was a stupid loser. My friends rejected me and said that I was faking it to get attention.
+
+Then I got back on track, but only for 3 days. I had to have surgery to remove a fibroma from my back. It took another 2 weeks to heal and I faced even more hate emanating from my friends and mentors.
+
+The migraines came back and I'm more behind than ever in my studies. I can hardly keep any food down and I've lots tons of weight, no matter how hard I try I can't seem to gain any.
+
+I've never resorted to alcohol or drug use, or self-harm. I'm always in so much physical and emotional pain and it's never gone away, I don't think it ever will. 
+
+...I know it sounds so angsty and stupid for a 15 year old girl to come here and say this, but I really need your help. 
+
+
+--------------------------------------------------
+
+Index: 387
+FALSE NEGATIVE:
+Text: I'm relatively new here, but I've seen enough for a life time of sadness. Here is a thought.I'll be brief.
+
+Depression.
+
+That's a taboo word these days, isn't it?
+
+"Depressed? What do you have to be depressed about?"
+
+It seems like everybody knows your depression better than you do, doesn't it? Which is weird. The word depression induces an awkwardness as if it's an indelible mark of shame on your reputation as a person, much akin to wearing a post-it note from your mom everywhere you go that says "I'm glad you stopped wetting the bed." 
+
+It's difficult to get rid of it. It's difficult to be happy about it. It's like part of you that's unrelenting and, like cancer, could sprout up against. And you become afraid of it. Afraid that you might relapse. That you might...somehow be weak enough for it to conquer you once more. 
+
+Personally, I'm not afraid. Rather, I embrace it. Depression to me isn't a fever that consumes me anymore, but a tickling of the ribs. It makes me laugh. **My depression** makes me laugh. Don't confuse that with your depression. I own my depression, and I'm proud to acknowledge it. Why? Because I've passed it. I've reached over to my depression, gave it a hard look, and laughed at it. As if it meant held little power. And it does hold little power. So when you talk about depression, don't forgo the thought of discussion your own. Because it's part of you. It's made you stronger. When you know extreme sadness, then happiness is bliss. And when you know bliss, there's absolutely no reason to ever get familiar with extreme sadness ever again.
+
+So. Feel proud of your depression. Feel proud that you've conquered something to massive and internal. Feel proud to tell others that you suffered through it. And even if they don't understand in the same way that us SuicideWatchers do, feel proud that you were able to admit to it. Live through it. And come out much more stronger than you entered it. 
+
+You're all amazing people. It's a damn fine thing that nobody goes through the same unique situation. Because when you come out, you're unique. That's right. You are unique. Cherish that though. Be proud of yourself. 
+--------------------------------------------------
+
+Index: 417
+FALSE NEGATIVE:
+Text: I need someone to talk to who has been in a really bad relationshipand unfortunately i chose the relationship over all the people I actually know. someone?
+--------------------------------------------------
+
+Index: 421
+FALSE NEGATIVE:
+Text: Hi suicide familySup guys
+--------------------------------------------------
+
+Index: 452
+FALSE NEGATIVE:
+Text: PeopleOne thing that pisses me off about this subreddit is that people always pretend to care about other people. And they do it to make themselves feel better. Like your using my pain for your own personal betterment. Like wtf is wrong with you huh? Your also just lieing to my face. Plus most of the people haven't been close to being in my shoes. It's like walking into a mechanic shop and acting like you know what your doing. It's fucked.(just a rant)(pm if you want to "give feed back" about this)
+--------------------------------------------------
+
