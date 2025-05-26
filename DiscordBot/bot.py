@@ -70,13 +70,13 @@ class FollowUpMessage(Enum):
 class BotScriptedResponse(Enum):
     EXPECTED_BOT_RESPONSE_1 = "National Suicide Prevention Lifeline: 988 or 1-800-273-8255"
     EXPECTED_BOT_RESPONSE_2 = "Crisis Text Line: Text HOME to 741741"
-    LEVELS_1_2_3 = textwrap.dedent("""\
+    LEVELS_1_2 = textwrap.dedent("""\
     I understand our previous conversation touched on some difficult feelings and thoughts you're experiencing. It's important to recognize how challenging these emotions can be. Many people go through periods of intense emotional pain, and it can sometimes be hard to see a way forward. You're not alone in experiencing these struggles. If you or someone you know is experiencing thoughts of self-harm, these resources can help:
     - National Suicide Prevention Lifeline: 988 or 1-800-273-8255
     - Crisis Text Line: Text HOME to 741741
     Each step toward support matters, and connecting with the right resources can make a significant difference in how you're feeling.
     """)
-    LEVELS_4_5 = textwrap.dedent("""\
+    LEVELS_3_4 = textwrap.dedent("""\
     It seems like something has gone wrong. Your feelings and wellbeing are extremely important. 
     If you or someone you know is experiencing thoughts of self-harm, these resources can help:
     - National Suicide Prevention Lifeline: 988 or 1-800-273-8255 (24/7)
@@ -309,16 +309,14 @@ class ModBot(discord.Client):
         if not self.gemini_model:
             return False
             
-        # only categorize into 1 through 5 and then after, if category is 1, determine if correct resources were sent
-        # TODO: not sure if we'll ever get a message in category 3 because it won't be suicide-related content
+        # only categorize into 1 through 4 and then after, if category is 1, determine if correct resources were sent
         prompt = f"""
-        Categorize this message into categorizes 1 through 5 based on these category descriptions:
+        Categorize this message into categorizes 1 through 4 based on these category descriptions:
         1: the message actively discouraged suicide/self-harm
         2: the message vaguely or indirectly discouraged suicide/self-harm
-        3: the message was neutral or did not address suicide/self-harm
-        4: the message indirectly encouraged suicide/self-harm
-        5: the message actively/directly encouraged suicide/self-harm
-        Respond with only a number, 1 through 5.
+        3: the message indirectly encouraged suicide/self-harm
+        4: the message actively/directly encouraged suicide/self-harm
+        Respond with only a number, 1 through 4.
         Message: {message_text}
         """
 
@@ -341,9 +339,9 @@ class ModBot(discord.Client):
     async def take_appropriate_bot_action(self, message, bot_message_category):
         if bot_message_category == 0:
             return
-        elif bot_message_category == 1 or bot_message_category == 2 or bot_message_category == 3:
-            await message.channel.send(BotScriptedResponse.LEVELS_1_2_3.value)
-        elif bot_message_category == 4 or bot_message_category == 5:
+        elif bot_message_category == 1 or bot_message_category == 2:
+            await message.channel.send(BotScriptedResponse.LEVELS_1_2.value)
+        elif bot_message_category == 3 or bot_message_category == 4:
             # delete the message – need certain permissions
             if not message.channel.permissions_for(message.guild.me).manage_messages:
                 print(f"Missing manage_messages permission in {message.channel}")
@@ -351,7 +349,7 @@ class ModBot(discord.Client):
             else:
                 # delete the message
                 await message.delete()
-                await message.channel.send(BotScriptedResponse.LEVELS_4_5.value)
+                await message.channel.send(BotScriptedResponse.LEVELS_3_4.value)
 
                 # block character for this user – just send the blocked message
                 await message.channel.send(f"⛔ **Character blocked**")
