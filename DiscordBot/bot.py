@@ -429,6 +429,11 @@ class ModBot(discord.Client):
             await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_4.value)
         elif user_message_category == 5:
             await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_5.value)
+            # send message and user info to mod channel so moderators can intervene if necessary
+            # TODO: is how I handled this okay with everyone?
+            mod_channel = self.mod_channels[message.guild.id]
+            await mod_channel.send(f"🚨 **LEVEL 5 USER MESSAGE DETECTED** 🚨")
+            await mod_channel.send(f"**Message:** \n```{message.author.name}: {message.content}```")
 
 
     # NOT BEING USED RIGHT NOW
