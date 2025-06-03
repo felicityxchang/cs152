@@ -17,6 +17,15 @@ from google.genai.types import HttpOptions, Part
 # import vertexai
 # from vertexai.generative_models import generative_models
 import textwrap
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+
+from dotenv import load_dotenv
+load_dotenv()
+project = os.environ.get("GOOGLE_CLOUD_PROJECT")
+location = os.environ.get("GOOGLE_CLOUD_LOCATION")
+use_vertexai = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").lower() == "true"  # Better boolean conversion
 
 from report import HarmfulSubcategory
 from report import SuicideFollow
@@ -164,7 +173,23 @@ class ModBot(discord.Client):
         self.reports = {} # Map from user IDs to the state of their report
         # Initialize Gemini model if API key is available
         # self.gemini_model = genai.Client(http_options=HttpOptions(api_version="v1"))
-        self.gemini_model = genai.Client(vertexai = True, project = "cs-152-460122", location="us-central1")
+        # self.gemini_model = genai.Client(vertexai = True, project = "cs-152-460122", location="us-central1")
+        self.gemini_model = genai.Client(vertexai = use_vertexai, project = project, location=location)
+        # Load the local suicide detection model
+        self.load_suicide_detection_model()
+
+    def load_suicide_detection_model(self):
+        """Load the local DistilBERT model for suicide content detection"""
+        try:
+            model_path = "best_model"
+            self.suicide_tokenizer = AutoTokenizer.from_pretrained(model_path)
+            self.suicide_model = AutoModelForSequenceClassification.from_pretrained(model_path)
+            self.suicide_model.eval()  # Set to evaluation mode
+            print("Local suicide detection model loaded successfully")
+        except Exception as e:
+            print(f"Error loading local suicide detection model: {e}")
+            self.suicide_tokenizer = None
+            self.suicide_model = None
 
     async def on_ready(self):
         print(f'{self.user.name} has connected to Discord! It is these guilds:')
@@ -225,14 +250,24 @@ class ModBot(discord.Client):
         for r in responses:
             await message.channel.send(r)
 
+        # Check if this is a suicide/self-harm report in the additional options state
         if author_id in self.reports and self.reports[author_id].state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             # Check if this is a suicide/self-harm report + send to mods
-            if (self.reports[author_id].subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM):
+            if (self.reports[author_id].subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM and
+                not self.reports[author_id].sent_to_moderators):
                 self.reports[author_id].user_id = author_id
+                self.reports[author_id].sent_to_moderators = True
                 await self.send_report_to_moderators(self.reports[author_id])
 
-        # If the report is complete or cancelled, remove it from our map
+        # If the report is complete or cancelled, send to moderators and remove from map
         if author_id in self.reports and self.reports[author_id].report_complete():
+            # Send all completed reports to moderators (except those already sent)
+            if (self.reports[author_id].message and 
+                not self.reports[author_id].sent_to_moderators):
+                self.reports[author_id].user_id = author_id
+                self.reports[author_id].sent_to_moderators = True
+                await self.send_report_to_moderators(self.reports[author_id])
+            
             self.reports.pop(author_id)
 
     async def handle_channel_message(self, message):
@@ -285,25 +320,41 @@ class ModBot(discord.Client):
         # await mod_channel.send(self.code_format(scores))
 
     async def check_suicide_content(self, message_text):
-        """Use Gemini to check if message contains suicide/self-harm content"""
-        if not self.gemini_model:
+        """Use local DistilBERT model to check if message contains suicide/self-harm content"""
+        if not self.suicide_model or not self.suicide_tokenizer:
+            print("Local suicide detection model not available, falling back to False")
             return False
             
-        prompt = f"""
-        Analyze the following message and determine if it contains any content related to suicide or self-harm, which can include loneliness and depression.
-        Return only "YES" if the message contains any mention of suicide or self-harm related content, or "NO" if it does not.
-        
-        Message: {message_text}
-        """
-
-        response = self.gemini_model.models.generate_content(
-            model=GEMINI_MODEL_VER,
-            contents=prompt
-        )
-        
-        result = response.text.strip().upper()
-        print("gemini response: ", result)
-        return result == "YES"
+        try:
+            # Tokenize the input text
+            inputs = self.suicide_tokenizer(
+                message_text,
+                truncation=True,
+                padding=True,
+                max_length=512,
+                return_tensors="pt"
+            )
+            
+            # Get model prediction
+            with torch.no_grad():
+                outputs = self.suicide_model(**inputs)
+                logits = outputs.logits
+                
+                # Apply softmax to get probabilities
+                probabilities = torch.softmax(logits, dim=-1)
+                
+                # Get the predicted class (assuming class 1 is suicide/self-harm)
+                predicted_class = torch.argmax(probabilities, dim=-1).item()
+                confidence = probabilities[0][predicted_class].item()
+                
+                print(f"Suicide detection - Predicted class: {predicted_class}, Confidence: {confidence:.4f}")
+                
+                # Return True if classified as suicide/self-harm content (class 1)
+                return predicted_class == 1
+                
+        except Exception as e:
+            print(f"Error in suicide content detection: {e}")
+            return False
         
     async def categorize_bot_message(self, message_text):
         if not self.gemini_model:
@@ -342,7 +393,7 @@ class ModBot(discord.Client):
         elif bot_message_category == 1 or bot_message_category == 2:
             await message.channel.send(BotScriptedResponse.LEVELS_1_2.value)
         elif bot_message_category == 3 or bot_message_category == 4:
-            # delete the message – need certain permissions
+            # delete the message – need certain permissions
             if not message.channel.permissions_for(message.guild.me).manage_messages:
                 print(f"Missing manage_messages permission in {message.channel}")
                 return
@@ -351,7 +402,7 @@ class ModBot(discord.Client):
                 await message.delete()
                 await message.channel.send(BotScriptedResponse.LEVELS_3_4.value)
 
-                # block character for this user – just send the blocked message
+                # block character for this user – just send the blocked message
                 await message.channel.send(f"⛔ **Character blocked**")
 
                 # send message to human moderator to determine if character should be blocked for all users
@@ -469,8 +520,8 @@ class ModBot(discord.Client):
             return {"contains_suicide_content": False}
 
     async def send_report_to_moderators(self, report):
-        """Send a report to the moderator channel and start the human moderator flow.
-        Only sends reports that involve suicide/self-harm."""
+        """Send a report to the moderator channel and start the appropriate moderator flow.
+        Suicide/self-harm reports get the full review flow, other reports get simple acknowledgment."""
         
         guild_id = report.message.guild.id
         if guild_id not in self.mod_channels:
@@ -487,14 +538,19 @@ class ModBot(discord.Client):
         
         report_id = f"{report.message.id}-{datetime.now().timestamp()}"
         self.moderator_reports[report_id] = mod_report
-        # check if this is a "check for blocking character for all users"
+        
+        # Check if this is a "check for blocking character for all users" report
         if report.block_character_for_all_users != None:
             await mod_channel.send(f"🚨 **DETERMINE IF CHARACTER SHOULD BE BLOCKED FOR ALL USERS** 🚨 (ID: {report_id})")
             await mod_channel.send(f"**Message:** \n```{report.message.author.name}: {report.message.content}```")
             await self.block_character_for_all_users_decision(report_id)
         
-        # Otherwise, send initial report information
-        else:
+        # Check if this is a suicide/self-harm report that needs full review
+        elif (hasattr(report, 'subcategory') and 
+              report.subcategory == HarmfulSubcategory.SUICIDE_SELF_HARM and
+              (hasattr(report, 'additional_option') and report.additional_option is not None) or
+              (hasattr(report, 'state') and report.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS)):
+            # Full suicide/self-harm review flow
             await mod_channel.send(f"🚨 **NEW SUICIDE/SELF-HARM REPORT** 🚨 (ID: {report_id})")
             await mod_channel.send(f"**Reported Message:** \n```{report.message.author.name}: {report.message.content}```")
             await mod_channel.send(f"**Category:** {report.category.value if report.category else 'None'}")
@@ -512,8 +568,24 @@ class ModBot(discord.Client):
             if report.explanation:
                 await mod_channel.send(f"**User Explanation:** {report.explanation}")
         
-            # Start the moderator review flow
+            # Start the full moderator review flow
             await self.start_moderator_review(report_id)
+        
+        else:
+            # Simple acknowledgment flow for all other reports
+            await mod_channel.send(f"📋 **NEW REPORT** 📋 (ID: {report_id})")
+            await mod_channel.send(f"**Reported Message:** \n```{report.message.author.name}: {report.message.content}```")
+            await mod_channel.send(f"**Category:** {report.category.value if report.category else 'None'}")
+            
+            if hasattr(report, 'subcategory') and report.subcategory:
+                await mod_channel.send(f"**Subcategory:** {report.subcategory.value}")
+            if hasattr(report, 'specific_type') and report.specific_type:
+                await mod_channel.send(f"**Type:** {report.specific_type.value}")
+            if hasattr(report, 'explanation') and report.explanation:
+                await mod_channel.send(f"**User Explanation:** {report.explanation}")
+            
+            # Simple acknowledgment flow
+            await self.start_simple_acknowledgment(report_id)
         
         return report_id
     
@@ -684,6 +756,25 @@ class ModBot(discord.Client):
             except:
                 pass
 
+        elif decision_type == "simple_acknowledgment":
+            try:
+                emoji_text = str(reaction.emoji)
+                if emoji_text[0].isdigit():
+                    choice = int(emoji_text[0])
+                    
+                    # Remove this message from the tracking dict
+                    self.decision_messages.pop(reaction.message.id)
+                    
+                    if choice == 1:
+                        await mod_report.mod_channel.send(f"✅ **Report acknowledged** (ID: {report_id}) - No action needed.")
+                    elif choice == 2:
+                        await mod_report.mod_channel.send(f"⚠️ **Report acknowledged** (ID: {report_id}) - Flagged for further review.")
+                    
+                    # Complete the report
+                    await self.complete_moderator_report(report_id)
+            except:
+                pass
+
     async def handle_categorization_decision(self, report_id, decision):
         """Handle the next steps based on categorization decision."""
         if report_id not in self.moderator_reports:
@@ -841,19 +932,41 @@ class ModBot(discord.Client):
         
         # Summarize the decisions made
         summary = "**Review Summary:**\n"
-        summary += f"- Categorization: {mod_report.decision.value if mod_report.decision else 'N/A'}\n"
+        summary += f"- Categorization: {mod_report.categorization_decision if mod_report.categorization_decision else 'N/A'}\n"
         
-        if mod_report.recategorization:
-            summary += f"- Recategorized as: {mod_report.recategorization.value}\n"
+        if mod_report.recategorized_as:
+            summary += f"- Recategorized as: {mod_report.recategorized_as}\n"
         
         if mod_report.imminent_danger:
-            summary += f"- Imminent danger: {mod_report.imminent_danger.value}\n"
+            summary += f"- Imminent danger: {mod_report.imminent_danger}\n"
         
-        if mod_report.gravity_level:
-            summary += f"- Gravity level: {mod_report.gravity_level.value}\n"
+        if mod_report.gravity_level is not None:
+            summary += f"- Gravity level: {mod_report.gravity_level}\n"
         
         await mod_report.mod_channel.send(summary)
 
+    async def start_simple_acknowledgment(self, report_id):
+        """Start a simple acknowledgment process for non-suicide/self-harm reports."""
+        if report_id not in self.moderator_reports:
+            return
+        
+        mod_report = self.moderator_reports[report_id]
+        
+        # Send simple acknowledgment options
+        await mod_report.mod_channel.send(f"**MODERATOR ACKNOWLEDGMENT** (Report ID: {report_id})")
+        await mod_report.mod_channel.send("Please acknowledge this report:")
+        options = "1. Acknowledged - No Action Needed\n2. Acknowledged - Further Review Required"
+        
+        message = await mod_report.mod_channel.send(options)
+        
+        # Add reaction options for moderator acknowledgment
+        for i in range(1, 3):  # 2 options
+            await message.add_reaction(f"{i}\u20e3")  # Adding keycap emoji (1️⃣, 2️⃣)
+        
+        # Store this message ID for reaction handling
+        if not hasattr(self, 'decision_messages'):
+            self.decision_messages = {}
+        self.decision_messages[message.id] = {"report_id": report_id, "type": "simple_acknowledgment"}
 
     # Modify the bot's on_reaction_add event handler to handle moderator reactions
     async def on_reaction_add(self, reaction, user):

@@ -98,6 +98,7 @@ class Report:
         self.blocked_topics = set()
         self.user_id = None
         self.block_character_for_all_users = None # should I have done this??
+        self.sent_to_moderators = False # Flag to prevent duplicate sends
         
     async def handle_message(self, message):
         '''
@@ -220,7 +221,7 @@ class Report:
                     else:
                         self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
                         return ["Report sent. ✅", 
-                                "Thank you for reporting this issue. Is there any other action you would like to take?", 
+                                "Thank you for reporting this issue. What actions would you like to take? (You can select multiple)",
                                 self._get_additional_suicide_options()]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
@@ -239,7 +240,7 @@ class Report:
                     else:
                         self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
                         return ["Report sent. ✅", 
-                                "Thank you for reporting this issue. Is there any other action you would like to take?", 
+                                "Thank you for reporting this issue. What actions would you like to take? (You can select multiple)",
                                 self._get_additional_ed_options()]
                 else:
                     return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
@@ -278,12 +279,12 @@ class Report:
             if self.specific_type == SuicideSelfHarmType.SUICIDE:
                 self.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
                 return ["Report sent. ✅", 
-                        "Thank you for reporting this issue. Is there any other action you would like to take?", 
+                        "Thank you for reporting this issue. What actions would you like to take? (You can select multiple)",
                         self._get_additional_suicide_options()]
             elif self.specific_type == SuicideSelfHarmType.EATING_DISORDER:
                 self.state = State.AWAITING_ADDITIONAL_ED_OPTIONS
                 return ["Report sent. ✅", 
-                        "Thank you for reporting this issue. Is there any other action you would like to take?", 
+                        "Thank you for reporting this issue. What actions would you like to take? (You can select multiple)",
                         self._get_additional_ed_options()]
             else:
                 self.state = State.REPORT_COMPLETE
@@ -291,65 +292,115 @@ class Report:
                 
         if self.state == State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS:
             try:
-                option_index = int(message.content) - 1
+                # Allow multiple selections separated by commas
+                input_text = message.content.strip()
+                if ',' in input_text:
+                    # Multiple selections
+                    selected_indices = [int(x.strip()) - 1 for x in input_text.split(',')]
+                else:
+                    # Single selection
+                    selected_indices = [int(input_text) - 1]
+                
                 options = list(AdditionalSuicideOptions)
-                if 0 <= option_index < len(options):
-                    self.additional_option = options[option_index]
-                    self.state = State.REPORT_COMPLETE
-                    if self.additional_option == AdditionalSuicideOptions.RESOURCES:
-                        return ["Here are some resources that might help:",
-                                "• National Suicide Prevention Lifeline: 1-800-273-8255",
-                                "• Crisis Text Line: Text HOME to 741741",
-                                "• International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/",
-                                "Thank you for your report. We will review this message and take appropriate action."]
-                    elif self.additional_option == AdditionalSuicideOptions.BLOCK_CHARACTER:
+                selected_options = []
+                
+                # Validate all selections
+                for option_index in selected_indices:
+                    if 0 <= option_index < len(options):
+                        selected_options.append(options[option_index])
+                    else:
+                        return [f"Invalid selection: {option_index + 1}. Please enter numbers between 1 and {len(options)}."]
+                
+                # Store all selected options
+                self.additional_option = selected_options
+                self.state = State.REPORT_COMPLETE
+                
+                responses = []
+                
+                # Process each selected option
+                for option in selected_options:
+                    if option == AdditionalSuicideOptions.RESOURCES:
+                        responses.extend([
+                            "Here are some resources that might help:",
+                            "• National Suicide Prevention Lifeline: 1-800-273-8255",
+                            "• Crisis Text Line: Text HOME to 741741",
+                            "• International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/"
+                        ])
+                    elif option == AdditionalSuicideOptions.BLOCK_CHARACTER:
                         # Add character to blocked list
                         if self.message:
                             self.blocked_characters.add(self.message.author.id)
-                        return ["⛔ Character blocked. You will not see messages from this character anymore.",
-                                "Thank you for your report. We will review this message and take appropriate action."]
-                    elif self.additional_option == AdditionalSuicideOptions.DONT_SHOW_TOPIC:
+                        responses.append("⛔ Character blocked. You will not see messages from this character anymore.")
+                    elif option == AdditionalSuicideOptions.DONT_SHOW_TOPIC:
                         # Add topic to blocked list
                         self.blocked_topics.add("suicide")
-                        return ["⛔ Topic blocked. This topic will not be shown to you anymore.",
-                                "Thank you for your report. We will review this message and take appropriate action."]
-                    elif self.additional_option == AdditionalSuicideOptions.STOP_HERE:
-                        return ["Thank you for your report. We will review this message and take appropriate action."]
-                else:
-                    return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
+                        responses.append("⛔ Topic blocked. This topic will not be shown to you anymore.")
+                    elif option == AdditionalSuicideOptions.STOP_HERE:
+                        # No additional action needed
+                        pass
+                
+                # Add final message
+                responses.append("Thank you for your report. We will review this message and take appropriate action.")
+                return responses
+                
             except ValueError:
-                return ["Please enter a number to select an option."]
+                return ["Please enter one or more numbers separated by commas (e.g., '1,2' for multiple options)."]
                 
         if self.state == State.AWAITING_ADDITIONAL_ED_OPTIONS:
             try:
-                option_index = int(message.content) - 1
+                # Allow multiple selections separated by commas
+                input_text = message.content.strip()
+                if ',' in input_text:
+                    # Multiple selections
+                    selected_indices = [int(x.strip()) - 1 for x in input_text.split(',')]
+                else:
+                    # Single selection
+                    selected_indices = [int(input_text) - 1]
+                
                 options = list(AdditionalEDOptions)
-                if 0 <= option_index < len(options):
-                    self.additional_option = options[option_index]
-                    self.state = State.REPORT_COMPLETE
-                    if self.additional_option == AdditionalEDOptions.RESOURCES:
-                        return ["Here are some resources that might help:",
-                                "• National Eating Disorders Association (NEDA): 1-800-931-2237",
-                                "• NEDA Crisis Text Line: Text NEDA to 741741",
-                                "• Eating Disorders Anonymous: http://www.eatingdisordersanonymous.org/",
-                                "Thank you for your report. We will review this message and take appropriate action."]
-                    elif self.additional_option == AdditionalEDOptions.BLOCK_CHARACTER:
+                selected_options = []
+                
+                # Validate all selections
+                for option_index in selected_indices:
+                    if 0 <= option_index < len(options):
+                        selected_options.append(options[option_index])
+                    else:
+                        return [f"Invalid selection: {option_index + 1}. Please enter numbers between 1 and {len(options)}."]
+                
+                # Store all selected options
+                self.additional_option = selected_options
+                self.state = State.REPORT_COMPLETE
+                
+                responses = []
+                
+                # Process each selected option
+                for option in selected_options:
+                    if option == AdditionalEDOptions.RESOURCES:
+                        responses.extend([
+                            "Here are some resources that might help:",
+                            "• National Eating Disorders Association (NEDA): 1-800-931-2237",
+                            "• NEDA Crisis Text Line: Text NEDA to 741741",
+                            "• Eating Disorders Anonymous: http://www.eatingdisordersanonymous.org/"
+                        ])
+                    elif option == AdditionalEDOptions.BLOCK_CHARACTER:
                         # Add character to blocked list
                         if self.message:
                             self.blocked_characters.add(self.message.author.id)
-                        return ["⛔ Character blocked. You will not see messages from this character anymore.",
-                                "Thank you for your report. We will review this message and take appropriate action."]
-                    elif self.additional_option == AdditionalEDOptions.DONT_SHOW_TOPIC:
+                        responses.append("⛔ Character blocked. You will not see messages from this character anymore.")
+                    elif option == AdditionalEDOptions.DONT_SHOW_TOPIC:
                         # Add topic to blocked list
                         self.blocked_topics.add("eating disorder")
-                        return ["⛔ Topic blocked. This topic will not be shown to you anymore.",
-                                "Thank you for your report. We will review this message and take appropriate action."]
-                    elif self.additional_option == AdditionalEDOptions.STOP_HERE:
-                        return ["Thank you for your report. We will review this message and take appropriate action."]
-                else:
-                    return ["Invalid selection. Please enter a number between 1 and " + str(len(options)) + "."]
+                        responses.append("⛔ Topic blocked. This topic will not be shown to you anymore.")
+                    elif option == AdditionalEDOptions.STOP_HERE:
+                        # No additional action needed
+                        pass
+                
+                # Add final message
+                responses.append("Thank you for your report. We will review this message and take appropriate action.")
+                return responses
+                
             except ValueError:
-                return ["Please enter a number to select an option."]
+                return ["Please enter one or more numbers separated by commas (e.g., '1,2' for multiple options)."]
 
         return ["I'm not sure how to handle that. Please try again or say `help` for more information."]
 
@@ -452,13 +503,13 @@ class Report:
         return options
         
     def _get_additional_suicide_options(self):
-        options = ""
+        options = "You can select multiple options by separating numbers with commas (e.g., '1,2'):\n"
         for i, option in enumerate(AdditionalSuicideOptions):
             options += f"{i+1}. {option.value}\n"
         return options
         
     def _get_additional_ed_options(self):
-        options = ""
+        options = "You can select multiple options by separating numbers with commas (e.g., '1,2'):\n"
         for i, option in enumerate(AdditionalEDOptions):
             options += f"{i+1}. {option.value}\n"
         return options
