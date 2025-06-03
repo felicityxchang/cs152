@@ -4,3 +4,6 @@ TABot/tokens.json
 */venv/*
 .DS_Store
 *.env
+# Large model files
+*.safetensors
+DiscordBot/best_model/model.safetensors
