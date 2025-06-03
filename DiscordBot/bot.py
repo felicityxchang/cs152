@@ -173,7 +173,7 @@ class ModBot(discord.Client):
         self.reports = {} # Map from user IDs to the state of their report
         # Initialize Gemini model if API key is available
         # self.gemini_model = genai.Client(http_options=HttpOptions(api_version="v1"))
-        self.gemini_model = genai.Client(vertexai = True, project = "cs-152-460122", location="us-central1")
+        self.gemini_model = genai.Client(vertexai = True, project = "cs152-group-15", location="us-central1")
         # self.gemini_model = genai.Client(vertexai = use_vertexai, project = project, location=location)
         # Load the local suicide detection model
         self.load_suicide_detection_model()
@@ -484,6 +484,10 @@ class ModBot(discord.Client):
             await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_4.value)
         elif user_message_category == 5:
             await message.channel.send(UserScriptedResponse.USER_SCRIPTED_REPONSE_5.value)
+            # send message and user info to mod channel so moderators can intervene if necessary
+            mod_channel = self.mod_channels[message.guild.id]
+            await mod_channel.send(f"🚨 **LEVEL 5 USER MESSAGE DETECTED** 🚨")
+            await mod_channel.send(f"**Message:** \n```{message.author.name}: {message.content}```")
 
 
     # NOT BEING USED RIGHT NOW
