@@ -11,11 +11,7 @@ import pdb
 from datetime import datetime
 from enum import Enum
 from google import genai
-# import google.generativeai as genai
 from google.genai.types import HttpOptions, Part
-# from google.generativeai import types
-# import vertexai
-# from vertexai.generative_models import generative_models
 import textwrap
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
@@ -35,7 +31,6 @@ from report import SuicideSelfHarmType
 
 # CONSTANTS
 GEMINI_MODEL_VER = 'gemini-2.0-flash-001'
-# GEMINI_MODEL_VER = "gemini-1.5-pro-preview"
 
 # Set up logging to the console
 logger = logging.getLogger('discord')
@@ -171,16 +166,18 @@ class ModBot(discord.Client):
         self.group_num = None
         self.mod_channels = {} # Map from guild to the mod channel id for that guild
         self.reports = {} # Map from user IDs to the state of their report
+
         # Initialize Gemini model if API key is available
         # self.gemini_model = genai.Client(http_options=HttpOptions(api_version="v1"))
-        self.gemini_model = genai.Client(vertexai = True, project = "cs152-group-15", location="us-central1")
+        # self.gemini_model = genai.Client(vertexai = True, project = "cs152-group-15", location="us-central1")
+        self.gemini_model = genai.Client(vertexai = True, project = "cs-152-460122", location="us-central1")
         # self.gemini_model = genai.Client(vertexai = use_vertexai, project = project, location=location)
+
         # Load the local suicide detection model
         self.load_suicide_detection_model()
 
     def load_suicide_detection_model(self):
         """Load the local DistilBERT model for suicide content detection"""
-        print("in load suicide detection model")
         try:
             model_path = "best_model"
             self.suicide_tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -277,16 +274,11 @@ class ModBot(discord.Client):
         # Only handle messages sent in the "group-#" channel
         if not message.channel.name == f'group-{self.group_num}':
             return
-
-        # Forward the message to the mod channel
-        # mod_channel = self.mod_channels[message.guild.id]
-        # await mod_channel.send(f'Forwarded message:\n{message.author.name}: "{message.content}"')
         
         # Analyze message with Gemini if available
         if self.gemini_model and message.content:
             # user case
             if not any(role.name == "bot" for role in message.author.roles):
-                print("role is not bot")
                 try:
                     # Check if the message relates to suicide/self-harm
                     is_suicide_related = await self.check_suicide_content(message.content)
@@ -302,7 +294,6 @@ class ModBot(discord.Client):
 
             # character AI/bot case
             else:
-                print("role is bot")
                 try:
                     # Check if the message relates to suicide/self-harm
                     is_suicide_related = await self.check_suicide_content(message.content)
@@ -318,9 +309,6 @@ class ModBot(discord.Client):
                 except Exception as e:
                     logger.error(f"Error analyzing message with Gemini: {e}")
             
-        # Original code for message evaluation
-        # scores = self.eval_text(message.content)
-        # await mod_channel.send(self.code_format(scores))
 
     async def check_suicide_content(self, message_text):
         """Use local DistilBERT model to check if message contains suicide/self-harm content"""
@@ -328,7 +316,6 @@ class ModBot(discord.Client):
             print("Local suicide detection model not available, falling back to False")
             return False
             
- 
         try:
             # Tokenize the input text
             inputs = self.suicide_tokenizer(
@@ -422,30 +409,6 @@ class ModBot(discord.Client):
         mod_channel = self.mod_channels[message.guild.id]
         await mod_channel.send(f"⚠️ **Character with character ID: {character_id} sent for review** - The character will be reviewed by the character team.")
             
-            
-            
-    async def create_auto_suicide_report(self, message):
-        """Create an auto-generated report for suicide/self-harm content"""
-        # Create a report instance
-        auto_report = Report(self)
-        auto_report.message = message
-        auto_report.category = ReportCategory.HARMFUL
-        auto_report.subcategory = HarmfulSubcategory.SUICIDE_SELF_HARM
-        auto_report.specific_type = SuicideSelfHarmType.SUICIDE
-        auto_report.follow_up = SuicideFollow.OTHER
-        auto_report.explanation = "[AUTO-DETECTED] Potential suicide/self-harm content detected by Gemini AI"
-        auto_report.state = State.AWAITING_ADDITIONAL_SUICIDE_OPTIONS
-        auto_report.user_id = message.author.id  # Store the message author's ID
-        
-        # Send the report to moderators
-        report_id = await self.send_report_to_moderators(auto_report)
-        
-        if report_id:
-            logger.info(f"Auto-generated suicide report sent to moderators: {report_id}")
-            mod_channel = self.mod_channels[message.guild.id]
-            await mod_channel.send(f"⚠️ **AUTO-DETECTED SUICIDE/SELF-HARM CONTENT** - Report ID: {report_id}")
-            await mod_channel.send("This report was automatically generated by Gemini AI. Please verify and take appropriate action.")
-
     async def categorize_user_message(self, message_text):
         if not self.gemini_model:
             return False
@@ -488,44 +451,6 @@ class ModBot(discord.Client):
             mod_channel = self.mod_channels[message.guild.id]
             await mod_channel.send(f"🚨 **LEVEL 5 USER MESSAGE DETECTED** 🚨")
             await mod_channel.send(f"**Message:** \n```{message.author.name}: {message.content}```")
-
-
-    # NOT BEING USED RIGHT NOW
-    async def analyze_message_gemini_detailed(self, message_text):
-        """Get detailed analysis of potentially harmful content"""
-        if not self.gemini_model:
-            return None
-            
-        prompt = f"""
-        Analyze the following message for suicide/self-harm content:
-        
-        Message: {message_text}
-        
-        If this message contains suicide/self-harm content, respond with a JSON object in the following format:
-        {{
-            "contains_suicide_content": true,
-            "confidence": [number between 0-1],
-            "explanation": [brief explanation],
-            "gravity_level": [number between 0-5, where 5 is most severe],
-            "recommended_action": [recommendation]
-        }}
-        
-        If it does not contain suicide/self-harm content, respond with:
-        {{
-            "contains_suicide_content": false
-        }}
-        """
-        
-        response = self.gemini_model.models.generate_content(
-            model=GEMINI_MODEL_VER,
-            contents=prompt
-        )
-        
-        try:
-            result = json.loads(response.text)
-            return result
-        except:
-            return {"contains_suicide_content": False}
 
     async def send_report_to_moderators(self, report):
         """Send a report to the moderator channel and start the appropriate moderator flow.
@@ -804,7 +729,6 @@ class ModBot(discord.Client):
             
         elif decision == "MISCATEGORIZED":
             await self.recategorize_report(report_id)
-            # await self.complete_moderator_report(report_id)
 
     async def check_imminent_danger(self, report_id):
         """Check if there is imminent danger to the user."""
@@ -888,7 +812,6 @@ class ModBot(discord.Client):
         elif gravity_level == 1 or gravity_level == 2 or gravity_level == 3:
             # Level 2: Send character for review
             await mod_report.mod_channel.send("⚠️ **Character sent for review** - The character will be reviewed by the character team.")
-            # Here you would implement logic to flag the character for review
             await self.complete_moderator_report(report_id)
             
         elif gravity_level >= 4:
@@ -938,21 +861,6 @@ class ModBot(discord.Client):
         
         await mod_report.mod_channel.send(f"✅ **Report review completed** (ID: {report_id})")
         
-        # Summarize the decisions made
-        summary = "**Review Summary:**\n"
-        summary += f"- Categorization: {mod_report.categorization_decision if mod_report.categorization_decision else 'N/A'}\n"
-        
-        if mod_report.recategorized_as:
-            summary += f"- Recategorized as: {mod_report.recategorized_as}\n"
-        
-        if mod_report.imminent_danger:
-            summary += f"- Imminent danger: {mod_report.imminent_danger}\n"
-        
-        if mod_report.gravity_level is not None:
-            summary += f"- Gravity level: {mod_report.gravity_level}\n"
-        
-        await mod_report.mod_channel.send(summary)
-
     async def start_simple_acknowledgment(self, report_id):
         """Start a simple acknowledgment process for non-suicide/self-harm reports."""
         if report_id not in self.moderator_reports:
@@ -986,21 +894,6 @@ class ModBot(discord.Client):
         # Handle moderator reactions
         await self.handle_moderator_reaction(reaction, user)
     
-    # def eval_text(self, message):
-    #     ''''
-    #     TODO: Once you know how you want to evaluate messages in your channel, 
-    #     insert your code here! This will primarily be used in Milestone 3. 
-    #     '''
-    #     return message
-
-    
-    # def code_format(self, text):
-    #     ''''
-    #     TODO: Once you know how you want to show that a message has been 
-    #     evaluated, insert your code here for formatting the string to be 
-    #     shown in the mod channel. 
-    #     '''
-    #     return "Evaluated: '" + text+ "'"
 
 
 client = ModBot()
